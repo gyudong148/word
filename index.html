@@ -154,8 +154,10 @@
         .controls button#addVerseBtn:hover { background-color: #7c3aed; }
         .controls button#highlightBtn { background-color: #0d9488; }
         .controls button#highlightBtn:hover { background-color: #0f766e; }
-        .controls button.gemini-btn { background-color: #c026d3; } /* Fuchsia */
-        .controls button.gemini-btn:hover { background-color: #a21caf; }
+        .controls button#loadFromFileBtn { background-color: #f59e0b; } /* Amber */
+        .controls button#loadFromFileBtn:hover { background-color: #d97706; }
+        .controls button.gemini-btn { background-color: #64748b; } /* Slate 500 */
+        .controls button.gemini-btn:hover { background-color: #475569; } /* Slate 600 */
         .controls button.action-button:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
         /* Main Slide Area */
@@ -199,7 +201,12 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 100; justify-content: center; align-items: center; }
         .modal-content { background-color: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); width: 90%; max-width: 600px; display: flex; flex-direction: column; gap: 1rem; max-height: 80vh; }
         .modal-content h2 { margin-top: 0; font-size: 1.5rem; font-weight: 700; color: #1e293b; }
-        #geminiResultContent { overflow-y: auto; white-space: pre-wrap; background-color: #f1f5f9; padding: 1rem; border-radius: 0.5rem; color: #334155; }
+        .modal-content p { color: #475569; }
+        #geminiResultContent { overflow-y: auto; background-color: #f1f5f9; padding: 1rem; border-radius: 0.5rem; color: #334155; }
+        #geminiResultContent h3 { font-size: 1.2rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; color: #1e293b; }
+        #geminiResultContent ul, #geminiResultContent ol { padding-left: 1.5rem; }
+        #geminiResultContent li { margin-bottom: 0.5rem; }
+        #geminiResultContent p { margin-bottom: 1rem; }
         .modal-content .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
         .modal-content label { font-weight: 600; color: #475569; }
         .modal-content input, .modal-content textarea { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 1rem; box-sizing: border-box; }
@@ -296,13 +303,16 @@
             <label for="highlight-color-picker">단어 강조색:</label> <input type="color" id="highlight-color-picker" value="#60a5fa">
         </div>
         <div class="control-group">
+             <button id="loadFromFileBtn" class="action-button">파일 불러오기</button>
              <button id="addVerseBtn" class="action-button">말씀 추가</button>
              <button id="screenshotBtn" class="action-button">현재 슬라이드 저장</button>
              <button id="saveAllBtn" class="action-button">모두 저장</button>
         </div>
          <div class="control-group">
-            <button id="gemini-explain-btn" class="action-button gemini-btn">✨ 말씀 해설</button>
-            <button id="gemini-question-btn" class="action-button gemini-btn">✨ 적용 질문</button>
+            <button id="gemini-explain-btn" class="action-button gemini-btn">말씀 해설</button>
+            <button id="gemini-question-btn" class="action-button gemini-btn">적용 질문</button>
+            <button id="gemini-lexicon-btn" class="action-button gemini-btn">중요 원어 해설</button>
+            <button id="gemini-crossref-btn" class="action-button gemini-btn">관주 성경 구절</button>
         </div>
     </div>
 
@@ -342,6 +352,19 @@
         </div>
     </div>
     
+    <!-- File Load Confirmation Modal -->
+    <div id="loadConfirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>말씀 불러오기</h2>
+            <p id="load-confirm-message"></p>
+            <div class="modal-buttons">
+                <button id="replace-btn" class="save-btn">현재 목록 교체</button>
+                <button id="append-btn" class="action-button" style="background-color: #10b981;">목록에 추가</button>
+                <button id="cancel-load-btn" class="cancel-btn">취소</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Gemini Result Modal -->
     <div id="geminiResultModal" class="modal-overlay">
         <div class="modal-content">
@@ -353,6 +376,8 @@
             </div>
         </div>
     </div>
+    
+    <input type="file" id="file-loader" class="hidden" accept=".txt">
 
     <script>
         const initialVerses = [
@@ -376,6 +401,7 @@
         let currentSlideIndex = 0;
         let isTransitioning = false;
         let isCapturing = false;
+        let parsedVersesFromFile = [];
 
         // DOM elements
         const verseText = document.getElementById('verseText');
@@ -408,9 +434,20 @@
         const newVerseReferenceInput = document.getElementById('newVerseReference');
         const newVerseTextInput = document.getElementById('newVerseText');
         
+        // File Load elements
+        const loadFromFileBtn = document.getElementById('loadFromFileBtn');
+        const fileLoader = document.getElementById('file-loader');
+        const loadConfirmModal = document.getElementById('loadConfirmModal');
+        const loadConfirmMessage = document.getElementById('load-confirm-message');
+        const replaceBtn = document.getElementById('replace-btn');
+        const appendBtn = document.getElementById('append-btn');
+        const cancelLoadBtn = document.getElementById('cancel-load-btn');
+
         // Gemini elements
         const geminiExplainBtn = document.getElementById('gemini-explain-btn');
         const geminiQuestionBtn = document.getElementById('gemini-question-btn');
+        const geminiLexiconBtn = document.getElementById('gemini-lexicon-btn');
+        const geminiCrossrefBtn = document.getElementById('gemini-crossref-btn');
         const geminiResultModal = document.getElementById('geminiResultModal');
         const geminiResultTitle = document.getElementById('geminiResultTitle');
         const geminiResultContent = document.getElementById('geminiResultContent');
@@ -474,7 +511,7 @@
         // --- Core Slide Logic ---
         function updateSlide(isBatch = false) {
             if (verses.length === 0) {
-                verseText.textContent = "말씀을 추가해주세요.";
+                verseText.textContent = "말씀을 추가하거나 파일에서 불러오세요.";
                 verseReference.textContent = "";
                 if (!isBatch) updateButtonStates();
                 return;
@@ -506,9 +543,12 @@
             screenshotBtn.disabled = disabled || verses.length === 0;
             saveAllBtn.disabled = disabled || verses.length === 0;
             addVerseBtn.disabled = disabled;
+            loadFromFileBtn.disabled = disabled;
             highlightBtn.disabled = disabled;
             geminiExplainBtn.disabled = disabled || verses.length === 0;
             geminiQuestionBtn.disabled = disabled || verses.length === 0;
+            geminiLexiconBtn.disabled = disabled || verses.length === 0;
+            geminiCrossrefBtn.disabled = disabled || verses.length === 0;
             
             if (isCapturing) {
                 screenshotBtn.textContent = '저장 중...';
@@ -647,14 +687,75 @@
             saveStateToLocalStorage();
         }
         
+        // --- File Loading Logic ---
+        function parseVerseFile(content) {
+            const newVerses = [];
+            const blocks = content.trim().split(/\n\s*\n/);
+            const verseRegex = /^\((.+?)\)\s*([\s\S]*)$/;
+
+            for (const block of blocks) {
+                const trimmedBlock = block.trim();
+                if (!trimmedBlock) continue;
+
+                const match = trimmedBlock.match(verseRegex);
+                if (match && match[1] && match[2]) {
+                    newVerses.push({
+                        reference: match[1].trim(),
+                        text: match[2].trim().replace(/\s+/g, ' ')
+                    });
+                } else {
+                    console.warn("다음 블록을 파싱할 수 없습니다:", trimmedBlock);
+                }
+            }
+            return newVerses;
+        }
+
+        function handleFileLoad(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                parsedVersesFromFile = parseVerseFile(e.target.result);
+                if (parsedVersesFromFile.length > 0) {
+                    loadConfirmMessage.textContent = `파일에서 ${parsedVersesFromFile.length}개의 구절을 찾았습니다. 어떻게 추가하시겠습니까?`;
+                    openModal(loadConfirmModal);
+                } else {
+                    alert("파일에서 유효한 형식의 말씀 구절을 찾지 못했습니다.\n형식: (참조) 내용");
+                }
+            };
+            reader.readAsText(file);
+            fileLoader.value = ''; // Reset file input
+        }
+        
         // --- Gemini API Logic ---
+        function markdownToHtml(text) {
+            return text
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>')
+                .replace(/^\d+\. (.*$)/gim, '<ol><li>$1</li></ol>')
+                .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*(.*)\*/gim, '<em>$1</em>')
+                .replace(/\n/g, '<br>')
+                .replace(/<\/ul><br><ul>/g, '')
+                .replace(/<\/ol><br><ol>/g, '');
+        }
+
         async function callGeminiAPI(prompt) {
-            geminiResultContent.textContent = '생성 중...';
+            geminiResultContent.innerHTML = '생성 중...';
             openModal(geminiResultModal);
+            
+            const apiKey = "AIzaSyABM_amTw-898hydlYgbS-eqJQ2AoWK8AI";
+
+            if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
+                 geminiResultContent.textContent = "오류: Gemini API 키가 설정되지 않았습니다. 코드의 'YOUR_API_KEY_HERE' 부분을 자신의 API 키로 교체해주세요.";
+                 return;
+            }
 
             let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
             const payload = { contents: chatHistory };
-            const apiKey = ""; 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
             try {
@@ -674,7 +775,7 @@
                     result.candidates[0].content && result.candidates[0].content.parts &&
                     result.candidates[0].content.parts.length > 0) {
                     const text = result.candidates[0].content.parts[0].text;
-                    geminiResultContent.textContent = text;
+                    geminiResultContent.innerHTML = markdownToHtml(text);
                 } else {
                     throw new Error('API 응답에서 내용을 찾을 수 없습니다.');
                 }
@@ -752,24 +853,62 @@
             addVerseModal.addEventListener('click', (event) => { if (event.target === addVerseModal) closeModal(addVerseModal); });
             addVerseForm.addEventListener('submit', handleAddVerse);
             
+            // File load event listeners
+            loadFromFileBtn.addEventListener('click', () => fileLoader.click());
+            fileLoader.addEventListener('change', handleFileLoad);
+            
+            replaceBtn.addEventListener('click', () => {
+                verses = parsedVersesFromFile;
+                currentSlideIndex = 0;
+                refreshVerseSelect();
+                updateSlide();
+                saveStateToLocalStorage();
+                closeModal(loadConfirmModal);
+            });
+
+            appendBtn.addEventListener('click', () => {
+                verses.push(...parsedVersesFromFile);
+                currentSlideIndex = verses.length - parsedVersesFromFile.length;
+                refreshVerseSelect();
+                updateSlide();
+                saveStateToLocalStorage();
+                closeModal(loadConfirmModal);
+            });
+            
+            cancelLoadBtn.addEventListener('click', () => closeModal(loadConfirmModal));
+            
             // Gemini button listeners
             geminiExplainBtn.addEventListener('click', () => {
                 const verse = verses[currentSlideIndex];
                 geminiResultTitle.textContent = `'${verse.reference}' 해설`;
-                const prompt = `다음 성경 구절인 '${verse.reference}: ${verse.text}'에 대해, 평신도가 이해하기 쉬운 간결한 해설을 작성해 주세요.`;
+                const prompt = `다음 성경 구절인 '${verse.reference}: ${verse.text}'에 대해, 평신도가 이해하기 쉬운 간결한 해설을 작성해 주세요. 결과는 Markdown 형식을 사용하여 제목, 목록, 굵은 글씨 등으로 보기 좋게 정리해 주세요.`;
                 callGeminiAPI(prompt);
             });
 
             geminiQuestionBtn.addEventListener('click', () => {
                 const verse = verses[currentSlideIndex];
                 geminiResultTitle.textContent = `'${verse.reference}' 적용 질문`;
-                const prompt = `다음 성경 구절인 '${verse.reference}: ${verse.text}'을 개인의 삶에 적용해볼 수 있는 구체적인 질문 3가지를 작성해 주세요.`;
+                const prompt = `다음 성경 구절인 '${verse.reference}: ${verse.text}'을 개인의 삶에 적용해볼 수 있는 구체적인 질문 3가지를 작성해 주세요. 결과는 Markdown 형식을 사용하여 번호 목록으로 보기 좋게 정리해 주세요.`;
+                callGeminiAPI(prompt);
+            });
+            
+            geminiLexiconBtn.addEventListener('click', () => {
+                const verse = verses[currentSlideIndex];
+                geminiResultTitle.textContent = `'${verse.reference}' 중요 원어 해설`;
+                const prompt = `다음 성경 구절인 '${verse.reference}: ${verse.text}'에 나오는 중요한 히브리어 또는 헬라어 원어 2~3개를 선택하여 그 깊은 의미를 설명해 주세요. 신학적 지식이 없는 평신도도 쉽게 이해할 수 있도록 명확하게 설명하고, 해당 원어가 성경의 다른 곳에서 어떻게 사용되는지 예시를 들어주세요. 결과는 Markdown 형식을 사용하여 보기 좋게 정리해 주세요.`;
+                callGeminiAPI(prompt);
+            });
+
+            geminiCrossrefBtn.addEventListener('click', () => {
+                const verse = verses[currentSlideIndex];
+                geminiResultTitle.textContent = `'${verse.reference}' 관주 성경 구절`;
+                const prompt = `다음 성경 구절인 '${verse.reference}: ${verse.text}'의 핵심 주제나 단어와 관련된 다른 성경 구절(관주)들을 5-7개 정도 찾아주세요. 각 구절이 왜 본문과 관련이 있는지 간략한 설명을 덧붙여 주세요. '성경은 성경으로 해석한다'는 원칙에 따라 본문의 의미를 더 깊이 이해하는 데 도움이 되어야 합니다. 결과는 Markdown 형식을 사용하여 보기 좋게 정리해 주세요.`;
                 callGeminiAPI(prompt);
             });
             
             closeGeminiResultBtn.addEventListener('click', () => closeModal(geminiResultModal));
             copyGeminiResultBtn.addEventListener('click', () => {
-                const textToCopy = geminiResultContent.textContent;
+                const textToCopy = geminiResultContent.innerText;
                 const textArea = document.createElement('textarea');
                 textArea.value = textToCopy;
                 document.body.appendChild(textArea);
