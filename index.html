@@ -9,61 +9,80 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;700&family=Nanum+Gothic:wght@400;700&family=Gowun+Batang:wght@400;700&family=Jua&family=Do+Hyeon&family=Black+Han+Sans&family=East+Sea+Dokdo&family=Gaegu&family=Single+Day&family=Spoqa+Han+Sans+Neo:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;700&family=Tmoney+Round+Wind:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;700&family=Nanum+Gothic:wght@400;700&family=Gowun+Batang:wght@400;700&family=Jua&family=Do+Hyeon&family=Black+Han+Sans&family=East+Sea+Dokdo&family=Gaegu&family=Single+Day&family=Spoqa+Han+Sans+Neo:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;700&family=Tmoney+Round+Wind:wght@400;700&family=Gothic+A1:wght@400;700&family=Nanum+Myeongjo:wght@400;700&family=Nanum+Pen+Script&family=Sunflower:wght@500;700&family=Stylish&family=Dokdo&family=Black+And+White+Picture&family=Cute+Font&family=Hi+Melody&family=Kirang+Haerang&family=Poor+Story&family=Song+Myung&family=Gamja+Flower&family=Yeon+Sung&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         /* CSS Custom Properties (Variables) for easy color changes */
         :root {
-            --bg-color: #f8fafc; /* Default light background */
-            --main-text-color: #1e293b; /* Default body text color (for controls, etc.) */
-            --verse-text-color: #ffffff; /* Default verse text color inside box */
-            --reference-text-color: #cbd5e1; /* Default reference text color */
-            --accent-color: #fcd34d; /* Default yellow accent color for line */
-            --highlight-text-color: #60a5fa; /* Default blue for highlighted text */
-            --box-bg-color: #1e293b; /* Default dark box background */
-            --button-color: #3b82f6; /* Fixed button color */
+            --bg-color: #f8fafc;
+            --main-text-color: #1e293b;
+            --verse-text-color: #ffffff;
+            --reference-text-color: #cbd5e1;
+            --accent-color: #fcd34d;
+            --highlight-text-color: #60a5fa;
+            --box-bg-color: #1e293b;
+            --button-color: #3b82f6;
+            --verse-font-size: 2.2rem;
+            --reference-font-size: 1.3rem;
         }
 
         body {
-            font-family: 'Inter', sans-serif; /* 기본 폰트 설정 */
+            font-family: 'Inter', sans-serif;
             margin: 0;
             min-height: 100vh;
             display: flex;
-            flex-direction: column; /* 컨트롤 패널을 상단에 배치하기 위함 */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            background-color: var(--bg-color); /* 배경색 변수 적용 */
-            color: var(--main-text-color); /* 기본 텍스트 색상 변수 적용 */
-            overflow-y: auto; /* Allow scrolling for controls on small screens */
+            background-color: var(--bg-color);
+            color: var(--main-text-color);
+            overflow-y: auto;
             padding: 1rem 0;
-            transition: background-color 0.3s ease; /* 배경색 전환 애니메이션 */
+            transition: background-color 0.3s ease;
         }
 
         /* Font classes */
+        .font-inter { font-family: 'Inter', sans-serif; }
         .font-noto-sans-kr { font-family: 'Noto Sans KR', sans-serif; }
         .font-nanum-gothic { font-family: 'Nanum Gothic', sans-serif; }
+        .font-spoqa-han-sans-neo { font-family: 'Spoqa Han Sans Neo', sans-serif; }
+        .font-ibm-plex-sans-kr { font-family: 'IBM Plex Sans KR', sans-serif; }
+        .font-gothic-a1 { font-family: 'Gothic A1', sans-serif; }
+        .font-nanum-myeongjo { font-family: 'Nanum Myeongjo', serif; }
         .font-gowun-batang { font-family: 'Gowun Batang', serif; }
+        .font-noto-serif-kr { font-family: 'Noto Serif KR', serif; }
+        .font-song-myung { font-family: 'Song Myung', serif; }
         .font-jua { font-family: 'Jua', sans-serif; }
         .font-do-hyeon { font-family: 'Do Hyeon', sans-serif; }
         .font-black-han-sans { font-family: 'Black Han Sans', sans-serif; }
-        .font-east-sea-dokdo { font-family: 'East Sea Dokdo', cursive; }
-        .font-gaegu { font-family: 'Gaegu', cursive; }
-        .font-single-day { font-family: 'Single Day', cursive; }
-        .font-inter { font-family: 'Inter', sans-serif; }
-        .font-spoqa-han-sans-neo { font-family: 'Spoqa Han Sans Neo', sans-serif; }
-        .font-ibm-plex-sans-kr { font-family: 'IBM Plex Sans KR', sans-serif; }
         .font-tmoney-round-wind { font-family: 'Tmoney Round Wind', sans-serif; }
+        .font-yeon-sung { font-family: 'Yeon Sung', cursive; }
+        .font-sunflower { font-family: 'Sunflower', sans-serif; }
+        .font-stylish { font-family: 'Stylish', sans-serif; }
+        .font-gamja-flower { font-family: 'Gamja Flower', cursive; }
+        .font-nanum-pen-script { font-family: 'Nanum Pen Script', cursive; }
+        .font-gaegu { font-family: 'Gaegu', cursive; }
+        .font-hi-melody { font-family: 'Hi Melody', cursive; }
+        .font-poor-story { font-family: 'Poor Story', cursive; }
+        .font-kirang-haerang { font-family: 'Kirang Haerang', cursive; }
+        .font-cute-font { font-family: 'Cute Font', cursive; }
+        .font-dokdo { font-family: 'Dokdo', cursive; }
+        .font-east-sea-dokdo { font-family: 'East Sea Dokdo', cursive; }
+        .font-black-and-white-picture { font-family: 'Black And White Picture', sans-serif; }
+        .font-single-day { font-family: 'Single Day', cursive; }
 
         /* Highlight Style */
         .highlight {
             color: var(--highlight-text-color);
-            font-weight: 700; /* Make highlighted text bolder */
+            font-weight: 700;
         }
 
         /* Controls Panel */
         .controls {
             margin-bottom: 1.5rem;
             display: flex;
-            flex-wrap: wrap; /* 작은 화면에서 줄바꿈 */
+            flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             gap: 1rem;
@@ -84,7 +103,7 @@
         .controls label {
             font-size: 1rem;
             font-weight: 600;
-            color: #334155; /* Tailwind slate-700 */
+            color: #334155;
             white-space: nowrap;
         }
 
@@ -93,20 +112,23 @@
         .controls button.action-button {
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
-            border: 1px solid #cbd5e1; /* Tailwind slate-300 */
-            background-color: #f8fafc; /* Tailwind slate-50 */
+            border: 1px solid #cbd5e1;
+            background-color: #f8fafc;
             font-size: 1rem;
             font-weight: 500;
-            color: #1e293b; /* Tailwind slate-800 */
+            color: #1e293b;
             cursor: pointer;
             outline: none;
             transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+        .controls input[type="range"] {
+            padding: 0;
         }
 
         .controls select:focus,
         .controls input:focus,
         .controls button.action-button:focus {
-            border-color: #3b82f6; /* Tailwind blue-500 */
+            border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
 
@@ -124,12 +146,16 @@
             color: white;
             font-weight: 600;
         }
-        .controls button#screenshotBtn { background-color: #10b981; } /* Emerald */
+        .controls button#screenshotBtn { background-color: #10b981; }
         .controls button#screenshotBtn:hover { background-color: #059669; }
-        .controls button#addVerseBtn { background-color: #8b5cf6; } /* Violet */
+        .controls button#saveAllBtn { background-color: #0891b2; } /* Cyan */
+        .controls button#saveAllBtn:hover { background-color: #0e7490; }
+        .controls button#addVerseBtn { background-color: #8b5cf6; }
         .controls button#addVerseBtn:hover { background-color: #7c3aed; }
-        .controls button#highlightBtn { background-color: #0d9488; } /* Teal */
+        .controls button#highlightBtn { background-color: #0d9488; }
         .controls button#highlightBtn:hover { background-color: #0f766e; }
+        .controls button.gemini-btn { background-color: #c026d3; } /* Fuchsia */
+        .controls button.gemini-btn:hover { background-color: #a21caf; }
         .controls button.action-button:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
         /* Main Slide Area */
@@ -160,8 +186,8 @@
 
         .verse-text-container { position: relative; padding-left: 1.5rem; }
         .vertical-line { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background-color: var(--accent-color); border-radius: 3px; transition: background-color 0.3s ease; }
-        .verse-text { font-size: 2.2rem; line-height: 1.7; color: var(--verse-text-color); font-weight: 600; transition: color 0.3s ease; }
-        .verse-reference { font-size: 1.3rem; color: var(--reference-text-color); font-weight: 400; text-align: right; margin-top: 1rem; transition: color 0.3s ease; }
+        .verse-text { font-size: var(--verse-font-size); line-height: 1.7; color: var(--verse-text-color); font-weight: 600; transition: color 0.3s ease, font-size 0.2s ease; }
+        .verse-reference { font-size: var(--reference-font-size); color: var(--reference-text-color); font-weight: 400; text-align: right; margin-top: 1rem; transition: color 0.3s ease, font-size 0.2s ease; }
 
         /* Navigation Buttons */
         .navigation-buttons { display: flex; justify-content: space-between; width: 100%; max-width: 400px; margin-top: 2rem; }
@@ -169,10 +195,11 @@
         .nav-button:hover { background-color: #2563eb; transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); }
         .nav-button:disabled { background-color: #9ca3af; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        /* Add Verse Modal */
+        /* Modal Styles */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background-color: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); width: 90%; max-width: 500px; display: flex; flex-direction: column; gap: 1rem; }
+        .modal-content { background-color: white; padding: 2rem; border-radius: 0.75rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); width: 90%; max-width: 600px; display: flex; flex-direction: column; gap: 1rem; max-height: 80vh; }
         .modal-content h2 { margin-top: 0; font-size: 1.5rem; font-weight: 700; color: #1e293b; }
+        #geminiResultContent { overflow-y: auto; white-space: pre-wrap; background-color: #f1f5f9; padding: 1rem; border-radius: 0.5rem; color: #334155; }
         .modal-content .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
         .modal-content label { font-weight: 600; color: #475569; }
         .modal-content input, .modal-content textarea { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 1rem; box-sizing: border-box; }
@@ -185,8 +212,8 @@
         /* Responsive Adjustments */
         @media (max-width: 768px) {
             .controls { flex-direction: column; align-items: stretch; }
-            .verse-text { font-size: 1.6rem; }
-            .verse-reference { font-size: 1.1rem; }
+            .verse-text { font-size: var(--verse-font-size); }
+            .verse-reference { font-size: var(--reference-font-size); }
         }
     </style>
 </head>
@@ -194,22 +221,52 @@
     <!-- Controls Panel -->
     <div class="controls">
         <div class="control-group">
-            <label for="font-select">글꼴:</label>
+            <label for="font-select">웹 글꼴:</label>
             <select id="font-select">
-                <option value="inter">Inter (기본)</option>
-                <option value="noto-sans-kr">Noto Sans KR</option>
-                <option value="nanum-gothic">나눔고딕</option>
-                <option value="gowun-batang">고운바탕</option>
-                <option value="jua">주아체</option>
-                <option value="do-hyeon">도현체</option>
-                <option value="black-han-sans">Black Han Sans</option>
-                <option value="east-sea-dokdo">동해독도체</option>
-                <option value="gaegu">개구체</option>
-                <option value="single-day">싱글데이체</option>
-                <option value="spoqa-han-sans-neo">이롭게바탕</option>
-                <option value="ibm-plex-sans-kr">프리젠테이션</option>
-                <option value="tmoney-round-wind">티머니라운드</option>
+                <optgroup label="Sans-serif (고딕 계열)">
+                    <option value="inter">Inter (기본)</option>
+                    <option value="noto-sans-kr">Noto Sans KR</option>
+                    <option value="nanum-gothic">나눔고딕</option>
+                    <option value="spoqa-han-sans-neo">Spoqa Han Sans Neo</option>
+                    <option value="ibm-plex-sans-kr">IBM Plex Sans KR</option>
+                    <option value="gothic-a1">Gothic A1</option>
+                </optgroup>
+                <optgroup label="Serif (명조 계열)">
+                    <option value="nanum-myeongjo">나눔명조</option>
+                    <option value="gowun-batang">고운바탕</option>
+                    <option value="noto-serif-kr">Noto Serif KR</option>
+                    <option value="song-myung">송명</option>
+                </optgroup>
+                 <optgroup label="Display (제목용)">
+                    <option value="jua">주아체</option>
+                    <option value="do-hyeon">도현체</option>
+                    <option value="black-han-sans">Black Han Sans</option>
+                    <option value="tmoney-round-wind">티머니 둥근바람</option>
+                    <option value="yeon-sung">연성</option>
+                    <option value="sunflower">해바라기</option>
+                    <option value="stylish">스타일리쉬</option>
+                </optgroup>
+                <optgroup label="Handwriting (손글씨)">
+                    <option value="gamja-flower">감자꽃</option>
+                    <option value="nanum-pen-script">나눔 펜 스크립트</option>
+                    <option value="gaegu">개구체</option>
+                    <option value="hi-melody">하이멜로디</option>
+                    <option value="poor-story">푸어 스토리</option>
+                    <option value="kirang-haerang">키랑해랑</option>
+                    <option value="cute-font">큐트 폰트</option>
+                    <option value="single-day">싱글 데이</option>
+                </optgroup>
+                 <optgroup label="Unique (독특한 글꼴)">
+                    <option value="dokdo">독도</option>
+                    <option value="east-sea-dokdo">동해독도</option>
+                    <option value="black-and-white-picture">흑백사진</option>
+                </optgroup>
             </select>
+        </div>
+        <div class="control-group">
+            <label for="font-size-slider">글꼴 크기:</label>
+            <input type="range" id="font-size-slider" min="1" max="4.5" step="0.1" value="2.2">
+            <span id="font-size-value" class="w-12 text-center">2.2rem</span>
         </div>
         <div class="control-group">
             <label for="verse-select">구절 선택:</label>
@@ -240,7 +297,12 @@
         </div>
         <div class="control-group">
              <button id="addVerseBtn" class="action-button">말씀 추가</button>
-             <button id="screenshotBtn" class="action-button">스크린샷 저장</button>
+             <button id="screenshotBtn" class="action-button">현재 슬라이드 저장</button>
+             <button id="saveAllBtn" class="action-button">모두 저장</button>
+        </div>
+         <div class="control-group">
+            <button id="gemini-explain-btn" class="action-button gemini-btn">✨ 말씀 해설</button>
+            <button id="gemini-question-btn" class="action-button gemini-btn">✨ 적용 질문</button>
         </div>
     </div>
 
@@ -279,7 +341,18 @@
             </form>
         </div>
     </div>
-
+    
+    <!-- Gemini Result Modal -->
+    <div id="geminiResultModal" class="modal-overlay">
+        <div class="modal-content">
+            <h2 id="geminiResultTitle">AI 생성 결과</h2>
+            <div id="geminiResultContent">생성 중...</div>
+            <div class="modal-buttons">
+                <button id="copyGeminiResultBtn" class="action-button" style="background-color: #10b981;">내용 복사</button>
+                <button id="closeGeminiResultBtn" class="cancel-btn">닫기</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const initialVerses = [
@@ -287,9 +360,16 @@
             { reference: "시편 90:10", text: "우리의 년수가 칠십이요 강건하면 팔십이라도 그 년수의 자랑은 수고와 슬픔 뿐이요 신속히 가니 우리가 날아가나이다" },
             { reference: "이사야 55:3", text: "너희는 귀를 기울이고 내게 나아와 들으라 그리하면 너희 영혼이 살리라 내가 너희에게 영원한 언약을 세우리니 곧 다윗에게 허락한 확실한 은혜니라" },
             { reference: "요한복음 8:32", text: "진리를 알찌니 진리가 너희를 자유케 하리라" },
-            // ... (The rest of the verses are omitted for brevity but should be here)
             { reference: "로마서 5:8", text: "우리가 아직 죄인 되었을 때에 그리스도께서 우리를 위하여 죽으심으로 하나님께서 우리에게 대한 자기의 사랑을 확증하셨느니라" },
             { reference: "요한복음 3:16", text: "하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 저를 믿는 자마다 멸망치 않고 영생을 얻게 하려 하심이니라" }
+        ];
+        
+        const allFontClasses = [
+            'font-inter', 'font-noto-sans-kr', 'font-nanum-gothic', 'font-spoqa-han-sans-neo', 'font-ibm-plex-sans-kr', 'font-gothic-a1',
+            'font-nanum-myeongjo', 'font-gowun-batang', 'font-noto-serif-kr', 'font-song-myung',
+            'font-jua', 'font-do-hyeon', 'font-black-han-sans', 'font-tmoney-round-wind', 'font-yeon-sung', 'font-sunflower', 'font-stylish',
+            'font-gamja-flower', 'font-nanum-pen-script', 'font-gaegu', 'font-hi-melody', 'font-poor-story', 'font-kirang-haerang', 'font-cute-font', 'font-single-day',
+            'font-dokdo', 'font-east-sea-dokdo', 'font-black-and-white-picture'
         ];
 
         let verses = [];
@@ -304,6 +384,8 @@
         const nextBtn = document.getElementById('nextBtn');
         const slideWrapper = document.getElementById('slideWrapper');
         const fontSelect = document.getElementById('font-select');
+        const fontSizeSlider = document.getElementById('font-size-slider');
+        const fontSizeValue = document.getElementById('font-size-value');
         const verseSelect = document.getElementById('verse-select');
         const bgColorPicker = document.getElementById('bg-color-picker');
         const verseBoxBgColorPicker = document.getElementById('verse-box-bg-color-picker');
@@ -312,6 +394,7 @@
         const accentColorPicker = document.getElementById('accent-color-picker');
         const highlightColorPicker = document.getElementById('highlight-color-picker');
         const screenshotBtn = document.getElementById('screenshotBtn');
+        const saveAllBtn = document.getElementById('saveAllBtn');
         
         // Highlight elements
         const highlightInput = document.getElementById('highlight-input');
@@ -324,12 +407,31 @@
         const cancelAddVerseBtn = document.getElementById('cancelAddVerseBtn');
         const newVerseReferenceInput = document.getElementById('newVerseReference');
         const newVerseTextInput = document.getElementById('newVerseText');
+        
+        // Gemini elements
+        const geminiExplainBtn = document.getElementById('gemini-explain-btn');
+        const geminiQuestionBtn = document.getElementById('gemini-question-btn');
+        const geminiResultModal = document.getElementById('geminiResultModal');
+        const geminiResultTitle = document.getElementById('geminiResultTitle');
+        const geminiResultContent = document.getElementById('geminiResultContent');
+        const copyGeminiResultBtn = document.getElementById('copyGeminiResultBtn');
+        const closeGeminiResultBtn = document.getElementById('closeGeminiResultBtn');
 
         // --- Data Persistence ---
         function saveStateToLocalStorage() {
             const state = {
                 verses: verses,
-                highlightWords: highlightInput.value
+                highlightWords: highlightInput.value,
+                fontSize: fontSizeSlider.value,
+                fontName: fontSelect.value,
+                colors: {
+                    bg: bgColorPicker.value,
+                    boxBg: verseBoxBgColorPicker.value,
+                    verseText: verseTextColorPicker.value,
+                    refText: referenceTextColorPicker.value,
+                    accent: accentColorPicker.value,
+                    highlight: highlightColorPicker.value
+                }
             };
             localStorage.setItem('customBibleAppState', JSON.stringify(state));
         }
@@ -340,17 +442,41 @@
                 const state = JSON.parse(savedState);
                 verses = state.verses && state.verses.length > 0 ? state.verses : initialVerses;
                 highlightInput.value = state.highlightWords || '';
+                
+                fontSizeSlider.value = state.fontSize || '2.2';
+                fontSizeSlider.dispatchEvent(new Event('input'));
+                
+                fontSelect.value = state.fontName || 'inter';
+                fontSelect.dispatchEvent(new Event('change'));
+
+                if (state.colors) {
+                    bgColorPicker.value = state.colors.bg || '#f8fafc';
+                    verseBoxBgColorPicker.value = state.colors.boxBg || '#1e293b';
+                    verseTextColorPicker.value = state.colors.verseText || '#ffffff';
+                    referenceTextColorPicker.value = state.colors.refText || '#cbd5e1';
+                    accentColorPicker.value = state.colors.accent || '#fcd34d';
+                    highlightColorPicker.value = state.colors.highlight || '#60a5fa';
+                    
+                    document.documentElement.style.setProperty('--bg-color', bgColorPicker.value);
+                    document.body.style.backgroundColor = bgColorPicker.value;
+                    document.documentElement.style.setProperty('--box-bg-color', verseBoxBgColorPicker.value);
+                    document.documentElement.style.setProperty('--verse-text-color', verseTextColorPicker.value);
+                    document.documentElement.style.setProperty('--reference-text-color', referenceTextColorPicker.value);
+                    document.documentElement.style.setProperty('--accent-color', accentColorPicker.value);
+                    document.documentElement.style.setProperty('--highlight-text-color', highlightColorPicker.value);
+                }
+
             } else {
                 verses = initialVerses;
             }
         }
 
         // --- Core Slide Logic ---
-        function updateSlide() {
+        function updateSlide(isBatch = false) {
             if (verses.length === 0) {
                 verseText.textContent = "말씀을 추가해주세요.";
                 verseReference.textContent = "";
-                updateButtonStates();
+                if (!isBatch) updateButtonStates();
                 return;
             }
             const verse = verses[currentSlideIndex];
@@ -360,17 +486,17 @@
             
             let newText = verse.text;
 
-            // Apply highlight for each word
             if (highlightWords.length > 0) {
-                // To avoid issues with nested spans, we build a single regex
                 const escapedWords = highlightWords.map(word => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
                 const regex = new RegExp(`(${escapedWords.join('|')})`, 'gi');
                 newText = verse.text.replace(regex, `<span class="highlight">$1</span>`);
             }
             
             verseText.innerHTML = newText;
-            verseSelect.value = currentSlideIndex;
-            updateButtonStates();
+            if (!isBatch) {
+                verseSelect.value = currentSlideIndex;
+                updateButtonStates();
+            }
         }
 
         function updateButtonStates() {
@@ -378,13 +504,18 @@
             prevBtn.disabled = currentSlideIndex === 0 || disabled || verses.length === 0;
             nextBtn.disabled = currentSlideIndex === verses.length - 1 || disabled || verses.length === 0;
             screenshotBtn.disabled = disabled || verses.length === 0;
+            saveAllBtn.disabled = disabled || verses.length === 0;
             addVerseBtn.disabled = disabled;
             highlightBtn.disabled = disabled;
+            geminiExplainBtn.disabled = disabled || verses.length === 0;
+            geminiQuestionBtn.disabled = disabled || verses.length === 0;
             
             if (isCapturing) {
                 screenshotBtn.textContent = '저장 중...';
+                saveAllBtn.textContent = '저장 중...';
             } else {
-                screenshotBtn.textContent = '스크린샷 저장';
+                screenshotBtn.textContent = '현재 슬라이드 저장';
+                saveAllBtn.textContent = '모두 저장';
             }
         }
 
@@ -414,7 +545,7 @@
         }
 
         function refreshVerseSelect() {
-            verseSelect.innerHTML = ''; // Clear existing options
+            verseSelect.innerHTML = '';
             verses.forEach((verse, index) => {
                 const option = document.createElement('option');
                 option.value = index;
@@ -425,142 +556,240 @@
         }
 
         // --- Screenshot Logic ---
-        async function captureScreenshot() {
+        async function captureAndDownloadSlide(verse) {
+            const elementToCapture = document.getElementById('slideWrapper');
+            const navButtons = elementToCapture.querySelector('.navigation-buttons');
+            navButtons.style.display = 'none';
+
+            const sourceCanvas = await html2canvas(elementToCapture, { useCORS: true, scale: 4, backgroundColor: null });
+            navButtons.style.display = 'flex';
+
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = 3840;
+            finalCanvas.height = 2160;
+            const ctx = finalCanvas.getContext('2d');
+            ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
+            ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+            const sourceAspectRatio = sourceCanvas.width / sourceCanvas.height;
+            const targetAspectRatio = finalCanvas.width / finalCanvas.height;
+            let drawWidth, drawHeight, x, y;
+            if (sourceAspectRatio > targetAspectRatio) {
+                drawWidth = finalCanvas.width;
+                drawHeight = drawWidth / sourceAspectRatio;
+                x = 0; y = (finalCanvas.height - drawHeight) / 2;
+            } else {
+                drawHeight = finalCanvas.height;
+                drawWidth = drawHeight * sourceAspectRatio;
+                y = 0; x = (finalCanvas.width - drawWidth) / 2;
+            }
+            ctx.drawImage(sourceCanvas, x, y, drawWidth, drawHeight);
+
+            const imageURL = finalCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = imageURL;
+            const date = new Date();
+            const filename = `${verse.reference.replace(/[:–\s]/g, '_')}_${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_4K.png`;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        async function saveAllSlides() {
             if (isCapturing || verses.length === 0) return;
+            
             isCapturing = true;
             updateButtonStates();
-            try {
-                const elementToCapture = document.getElementById('slideWrapper');
-                const navButtons = elementToCapture.querySelector('.navigation-buttons');
-                navButtons.style.display = 'none';
+            
+            const originalIndex = currentSlideIndex;
+            const originalButtonText = saveAllBtn.textContent;
 
-                const sourceCanvas = await html2canvas(elementToCapture, { useCORS: true, scale: 4, backgroundColor: null }); // Increased scale for higher resolution
-                navButtons.style.display = 'flex';
-
-                const finalCanvas = document.createElement('canvas');
-                // Set canvas size to 4K UHD
-                finalCanvas.width = 3840;
-                finalCanvas.height = 2160;
-                const ctx = finalCanvas.getContext('2d');
-                ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
-                ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-
-                const sourceAspectRatio = sourceCanvas.width / sourceCanvas.height;
-                const targetAspectRatio = finalCanvas.width / finalCanvas.height;
-                let drawWidth, drawHeight, x, y;
-                if (sourceAspectRatio > targetAspectRatio) {
-                    drawWidth = finalCanvas.width;
-                    drawHeight = drawWidth / sourceAspectRatio;
-                    x = 0;
-                    y = (finalCanvas.height - drawHeight) / 2;
-                } else {
-                    drawHeight = finalCanvas.height;
-                    drawWidth = drawHeight * sourceAspectRatio;
-                    y = 0;
-                    x = (finalCanvas.width - drawWidth) / 2;
+            for (let i = 0; i < verses.length; i++) {
+                currentSlideIndex = i;
+                updateSlide(true);
+                saveAllBtn.textContent = `저장 중... (${i + 1}/${verses.length})`;
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                try {
+                    await captureAndDownloadSlide(verses[i]);
+                } catch (error) {
+                    console.error(`Slide ${i} 저장 실패:`, error);
+                    alert(`${verses[i].reference} 슬라이드 저장에 실패했습니다. 계속 진행합니다.`);
                 }
-                ctx.drawImage(sourceCanvas, x, y, drawWidth, drawHeight);
-
-                const imageURL = finalCanvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.href = imageURL;
-                const date = new Date();
-                const filename = `${verses[currentSlideIndex].reference.replace(/[:–\s]/g, '_')}_${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}_4K.png`;
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch (error) {
-                console.error('Screenshot error:', error);
-                alert('스크린샷 생성에 실패했습니다.');
-            } finally {
-                isCapturing = false;
-                updateButtonStates();
             }
+            
+            currentSlideIndex = originalIndex;
+            updateSlide();
+            
+            isCapturing = false;
+            saveAllBtn.textContent = originalButtonText;
+            updateButtonStates();
+            alert(`${verses.length}개의 슬라이드 저장이 완료되었습니다.`);
         }
 
         // --- Modal Logic ---
-        function openModal() {
-            addVerseModal.style.display = 'flex';
-        }
-
-        function closeModal() {
-            addVerseModal.style.display = 'none';
-            addVerseForm.reset();
-        }
+        function openModal(modal) { modal.style.display = 'flex'; }
+        function closeModal(modal) { modal.style.display = 'none'; }
 
         function handleAddVerse(event) {
             event.preventDefault();
             const newRef = newVerseReferenceInput.value.trim();
             const newText = newVerseTextInput.value.trim();
-
-            if (!newRef || !newText) {
-                alert('참조와 말씀 내용을 모두 입력해주세요.');
-                return;
-            }
-
+            if (!newRef || !newText) { alert('참조와 말씀 내용을 모두 입력해주세요.'); return; }
             verses.push({ reference: newRef, text: newText });
-            saveStateToLocalStorage();
-            
-            const newIndex = verses.length - 1;
-            currentSlideIndex = newIndex;
-            
+            currentSlideIndex = verses.length - 1;
             refreshVerseSelect();
             updateSlide();
-            closeModal();
+            closeModal(addVerseModal);
+            addVerseForm.reset();
+            saveStateToLocalStorage();
+        }
+        
+        // --- Gemini API Logic ---
+        async function callGeminiAPI(prompt) {
+            geminiResultContent.textContent = '생성 중...';
+            openModal(geminiResultModal);
+
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API 요청 실패: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    geminiResultContent.textContent = text;
+                } else {
+                    throw new Error('API 응답에서 내용을 찾을 수 없습니다.');
+                }
+            } catch (error) {
+                console.error("Gemini API 호출 오류:", error);
+                geminiResultContent.textContent = `오류가 발생했습니다: ${error.message}`;
+            }
         }
 
         // --- Event Listeners ---
-        prevBtn.addEventListener('click', () => transitionSlide(currentSlideIndex - 1));
-        nextBtn.addEventListener('click', () => transitionSlide(currentSlideIndex + 1));
-        screenshotBtn.addEventListener('click', captureScreenshot);
-        fontSelect.addEventListener('change', (event) => {
-            document.body.className = document.body.className.replace(/font-[\w-]+/g, '');
-            document.body.classList.add(`font-${event.target.value}`);
-        });
-        verseSelect.addEventListener('change', (event) => {
-            transitionSlide(parseInt(event.target.value));
-        });
+        function setupEventListeners() {
+            prevBtn.addEventListener('click', () => transitionSlide(currentSlideIndex - 1));
+            nextBtn.addEventListener('click', () => transitionSlide(currentSlideIndex + 1));
+            screenshotBtn.addEventListener('click', async () => {
+                if (isCapturing) return;
+                isCapturing = true;
+                updateButtonStates();
+                try {
+                    await captureAndDownloadSlide(verses[currentSlideIndex]);
+                } catch (error) {
+                    console.error('Screenshot error:', error);
+                    alert('스크린샷 생성에 실패했습니다.');
+                } finally {
+                    isCapturing = false;
+                    updateButtonStates();
+                }
+            });
+            saveAllBtn.addEventListener('click', saveAllSlides);
+            
+            fontSelect.addEventListener('change', (event) => {
+                document.body.classList.remove(...allFontClasses);
+                if (event.target.value) {
+                    document.body.classList.add(`font-${event.target.value}`);
+                }
+                saveStateToLocalStorage();
+            });
 
-        // Highlight listeners
-        highlightBtn.addEventListener('click', () => {
-            updateSlide();
-            saveStateToLocalStorage();
-        });
-        highlightInput.addEventListener('keyup', (event) => {
-            if (event.key === 'Enter') {
-                highlightBtn.click();
+            fontSizeSlider.addEventListener('input', (event) => {
+                const newSize = parseFloat(event.target.value);
+                document.documentElement.style.setProperty('--verse-font-size', `${newSize}rem`);
+                document.documentElement.style.setProperty('--reference-font-size', `${newSize * 0.6}rem`);
+                fontSizeValue.textContent = `${newSize.toFixed(1)}rem`;
+            });
+            fontSizeSlider.addEventListener('change', saveStateToLocalStorage);
+
+            verseSelect.addEventListener('change', (event) => transitionSlide(parseInt(event.target.value)));
+
+            highlightBtn.addEventListener('click', () => {
+                updateSlide();
+                saveStateToLocalStorage();
+            });
+            highlightInput.addEventListener('keyup', (event) => {
+                if (event.key === 'Enter') highlightBtn.click();
+            });
+
+            const colorPickers = {
+                '--bg-color': bgColorPicker,
+                '--box-bg-color': verseBoxBgColorPicker,
+                '--verse-text-color': verseTextColorPicker,
+                '--reference-text-color': referenceTextColorPicker,
+                '--accent-color': accentColorPicker,
+                '--highlight-text-color': highlightColorPicker
+            };
+            for (const [prop, picker] of Object.entries(colorPickers)) {
+                picker.addEventListener('input', (event) => {
+                    document.documentElement.style.setProperty(prop, event.target.value);
+                    if (prop === '--highlight-text-color') updateSlide();
+                    if (prop === '--bg-color') document.body.style.backgroundColor = event.target.value;
+                });
+                 picker.addEventListener('change', saveStateToLocalStorage);
             }
-        });
 
-        // Color pickers
-        bgColorPicker.addEventListener('input', (event) => {
-            document.documentElement.style.setProperty('--bg-color', event.target.value);
-            document.body.style.backgroundColor = event.target.value;
-        });
-        verseBoxBgColorPicker.addEventListener('input', (event) => { document.documentElement.style.setProperty('--box-bg-color', event.target.value); });
-        verseTextColorPicker.addEventListener('input', (event) => { document.documentElement.style.setProperty('--verse-text-color', event.target.value); });
-        referenceTextColorPicker.addEventListener('input', (event) => { document.documentElement.style.setProperty('--reference-text-color', event.target.value); });
-        
-        accentColorPicker.addEventListener('input', (event) => { 
-            document.documentElement.style.setProperty('--accent-color', event.target.value);
-        });
+            addVerseBtn.addEventListener('click', () => openModal(addVerseModal));
+            cancelAddVerseBtn.addEventListener('click', () => closeModal(addVerseModal));
+            addVerseModal.addEventListener('click', (event) => { if (event.target === addVerseModal) closeModal(addVerseModal); });
+            addVerseForm.addEventListener('submit', handleAddVerse);
+            
+            // Gemini button listeners
+            geminiExplainBtn.addEventListener('click', () => {
+                const verse = verses[currentSlideIndex];
+                geminiResultTitle.textContent = `'${verse.reference}' 해설`;
+                const prompt = `다음 성경 구절인 '${verse.reference}: ${verse.text}'에 대해, 평신도가 이해하기 쉬운 간결한 해설을 작성해 주세요.`;
+                callGeminiAPI(prompt);
+            });
 
-        highlightColorPicker.addEventListener('input', (event) => {
-            document.documentElement.style.setProperty('--highlight-text-color', event.target.value);
-            updateSlide(); // Re-render slide to apply new highlight color
-        });
-
-        // Modal event listeners
-        addVerseBtn.addEventListener('click', openModal);
-        cancelAddVerseBtn.addEventListener('click', closeModal);
-        addVerseModal.addEventListener('click', (event) => {
-            if (event.target === addVerseModal) closeModal();
-        });
-        addVerseForm.addEventListener('submit', handleAddVerse);
+            geminiQuestionBtn.addEventListener('click', () => {
+                const verse = verses[currentSlideIndex];
+                geminiResultTitle.textContent = `'${verse.reference}' 적용 질문`;
+                const prompt = `다음 성경 구절인 '${verse.reference}: ${verse.text}'을 개인의 삶에 적용해볼 수 있는 구체적인 질문 3가지를 작성해 주세요.`;
+                callGeminiAPI(prompt);
+            });
+            
+            closeGeminiResultBtn.addEventListener('click', () => closeModal(geminiResultModal));
+            copyGeminiResultBtn.addEventListener('click', () => {
+                const textToCopy = geminiResultContent.textContent;
+                const textArea = document.createElement('textarea');
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    copyGeminiResultBtn.textContent = '복사 완료!';
+                    setTimeout(() => {
+                        copyGeminiResultBtn.textContent = '내용 복사';
+                    }, 1500);
+                } catch (err) {
+                    console.error('복사 실패:', err);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
 
         // --- Initial Load ---
         function initialize() {
+            setupEventListeners();
             loadStateFromLocalStorage();
             refreshVerseSelect();
             updateSlide();
