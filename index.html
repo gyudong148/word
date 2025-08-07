@@ -6,6 +6,8 @@
     <title>사용자 정의 말씀 슬라이드</title>
     <!-- html2canvas 라이브러리 (스크린샷 기능) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kLmbG4dGzcPTQsROJAgaA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- PptxGenJS 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -299,8 +301,10 @@
         <div class="control-group">
              <button id="loadFromFileBtn" class="action-button">파일 불러오기</button>
              <button id="addVerseBtn" class="action-button">말씀 추가</button>
-             <button id="screenshotBtn" class="action-button">현재 슬라이드 저장</button>
-             <button id="saveAllBtn" class="action-button">모두 저장</button>
+             <button id="screenshotBtn" class="action-button">이미지로 저장</button>
+             <button id="saveAllBtn" class="action-button">모두 이미지로 저장</button>
+             <button id="savePptBtn" class="action-button" style="background-color: #c2410c;">PPT로 저장</button>
+             <button id="saveAllPptBtn" class="action-button" style="background-color: #9a3412;">모두 PPT로 저장</button>
         </div>
          <div class="control-group">
             <button id="gemini-explain-btn" class="action-button gemini-btn">말씀 해설</button>
@@ -415,6 +419,8 @@
         const highlightColorPicker = document.getElementById('highlight-color-picker');
         const screenshotBtn = document.getElementById('screenshotBtn');
         const saveAllBtn = document.getElementById('saveAllBtn');
+        const savePptBtn = document.getElementById('savePptBtn');
+        const saveAllPptBtn = document.getElementById('saveAllPptBtn');
         const highlightInput = document.getElementById('highlight-input');
         const highlightBtn = document.getElementById('highlightBtn');
         const addVerseBtn = document.getElementById('addVerseBtn');
@@ -529,6 +535,8 @@
             nextBtn.disabled = currentSlideIndex === verses.length - 1 || disabled || noVerses;
             screenshotBtn.disabled = disabled || noVerses;
             saveAllBtn.disabled = disabled || noVerses;
+            savePptBtn.disabled = disabled || noVerses;
+            saveAllPptBtn.disabled = disabled || noVerses;
             addVerseBtn.disabled = disabled;
             loadFromFileBtn.disabled = disabled;
             highlightBtn.disabled = disabled;
@@ -582,7 +590,7 @@
         }
 
         // --- 기능 함수 ---
-        async function captureAndDownloadSlide(verse) {
+        async function captureSlideAsImage() {
             const elementToCapture = document.getElementById('slideWrapper');
             const navButtons = elementToCapture.querySelector('.navigation-buttons');
             navButtons.style.display = 'none';
@@ -610,8 +618,11 @@
                 y = 0; x = (finalCanvas.width - drawWidth) / 2;
             }
             ctx.drawImage(sourceCanvas, x, y, drawWidth, drawHeight);
+            return finalCanvas.toDataURL('image/png');
+        }
 
-            const imageURL = finalCanvas.toDataURL('image/png');
+        async function captureAndDownloadImage(verse) {
+            const imageURL = await captureSlideAsImage();
             const link = document.createElement('a');
             link.href = imageURL;
             const date = new Date();
@@ -621,7 +632,7 @@
             link.click();
             document.body.removeChild(link);
         }
-        
+
         async function saveAllSlides() {
             if (isCapturing || verses.length === 0) return;
             
@@ -639,7 +650,7 @@
                 await new Promise(resolve => setTimeout(resolve, 100));
                 
                 try {
-                    await captureAndDownloadSlide(verses[i]);
+                    await captureAndDownloadImage(verses[i]);
                 } catch (error) {
                     console.error(`Slide ${i} 저장 실패:`, error);
                     alert(`${verses[i].reference} 슬라이드 저장에 실패했습니다. 계속 진행합니다.`);
@@ -653,6 +664,70 @@
             saveAllBtn.textContent = originalButtonText;
             updateButtonStates();
             alert(`${verses.length}개의 슬라이드 저장이 완료되었습니다.`);
+        }
+
+        async function saveSlideAsPpt() {
+            if (isCapturing) return;
+            isCapturing = true;
+            updateButtonStates();
+
+            try {
+                const imageURL = await captureSlideAsImage();
+                let pptx = new PptxGenJS();
+                pptx.layout = 'LAYOUT_16x9';
+                let slide = pptx.addSlide();
+                slide.addImage({ data: imageURL, x: 0, y: 0, w:'100%', h:'100%' });
+                const verse = verses[currentSlideIndex];
+                const date = new Date();
+                const filename = `${verse.reference.replace(/[:–\s]/g, '_')}_${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}.pptx`;
+                pptx.writeFile({ fileName: filename });
+            } catch (error) {
+                console.error('PPT 생성 오류:', error);
+                alert('PPT 파일 생성에 실패했습니다.');
+            } finally {
+                isCapturing = false;
+                updateButtonStates();
+            }
+        }
+
+        async function saveAllSlidesAsPpt() {
+            if (isCapturing || verses.length === 0) return;
+
+            isCapturing = true;
+            saveAllPptBtn.textContent = 'PPT 생성중...';
+            updateButtonStates();
+
+            const originalIndex = currentSlideIndex;
+            let pptx = new PptxGenJS();
+            pptx.layout = 'LAYOUT_16x9';
+
+            for (let i = 0; i < verses.length; i++) {
+                currentSlideIndex = i;
+                updateSlide(true);
+                saveAllPptBtn.textContent = `PPT 생성중... (${i + 1}/${verses.length})`;
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                try {
+                    const imageURL = await captureSlideAsImage();
+                    let slide = pptx.addSlide();
+                    slide.addImage({ data: imageURL, x: 0, y: 0, w:'100%', h:'100%' });
+                } catch (error) {
+                    console.error(`Slide ${i} PPT 변환 실패:`, error);
+                    alert(`${verses[i].reference} 슬라이드의 PPT 변환에 실패했습니다. 계속 진행합니다.`);
+                }
+            }
+
+            currentSlideIndex = originalIndex;
+            updateSlide();
+
+            const date = new Date();
+            const filename = `말씀_슬라이드_${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2,'0')}${date.getDate().toString().padStart(2,'0')}.pptx`;
+            pptx.writeFile({ fileName: filename });
+
+            isCapturing = false;
+            saveAllPptBtn.textContent = '모두 PPT로 저장';
+            updateButtonStates();
+            alert(`${verses.length}개의 슬라이드를 포함한 PPT 파일 저장이 완료되었습니다.`);
         }
 
         function openModal(modal) { modal.style.display = 'flex'; }
@@ -777,7 +852,7 @@
                 isCapturing = true;
                 updateButtonStates();
                 try {
-                    await captureAndDownloadSlide(verses[currentSlideIndex]);
+                    await captureAndDownloadImage(verses[currentSlideIndex]);
                 } catch (error) {
                     console.error('Screenshot error:', error);
                     alert('스크린샷 생성에 실패했습니다.');
@@ -787,6 +862,8 @@
                 }
             });
             saveAllBtn.addEventListener('click', saveAllSlides);
+            savePptBtn.addEventListener('click', saveSlideAsPpt);
+            saveAllPptBtn.addEventListener('click', saveAllSlidesAsPpt);
             
             fontSelect.addEventListener('change', (event) => {
                 document.body.classList.remove(...allFontClasses);
