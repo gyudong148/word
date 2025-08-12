@@ -3,15 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>성경 말씀 프로젝터_v13_Apple_Optimized</title>
+    <title>성경 말씀 프로젝터_v14_DarkMode</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <!-- '고운바탕' 폰트 추가 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
     <!-- 성능 향상을 위해 Wasm 버전의 sql.js를 사용합니다. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
     <style>
         body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f0f9ff;
+            /* 기본 폰트를 'Gowun Batang'으로 변경 */
+            font-family: 'Gowun Batang', serif;
+            background-color: #0f172a; /* bg-slate-900 */
             /* iOS에서 스크롤이 부드럽게 되도록 설정 */
             -webkit-overflow-scrolling: touch;
         }
@@ -19,19 +23,22 @@
             max-height: 25vh;
             overflow-y: auto;
         }
+        /* 다크모드 스크롤바 스타일 */
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #e0f2fe; }
-        ::-webkit-scrollbar-thumb { background: #7dd3fc; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
-        #preview-display::-webkit-scrollbar-track, #history-list::-webkit-scrollbar-track { background: #374151; }
-        #preview-display::-webkit-scrollbar-thumb, #history-list::-webkit-scrollbar-thumb { background: #6b7280; }
-        #preview-display::-webkit-scrollbar-thumb:hover, #history-list::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        ::-webkit-scrollbar-track { background: #1e293b; } /* bg-slate-800 */
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; } /* bg-slate-600 */
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; } /* bg-slate-500 */
+        
+        #preview-display::-webkit-scrollbar-track, #history-list::-webkit-scrollbar-track { background: #1e293b; }
+        #preview-display::-webkit-scrollbar-thumb, #history-list::-webkit-scrollbar-thumb { background: #4b5563; }
+        #preview-display::-webkit-scrollbar-thumb:hover, #history-list::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
         #db-file-input, #logo-file-input { display: none; }
         .modal { transition: opacity 0.25s ease; }
         .search-result-item, .history-item { transition: background-color: 0.2s; }
-        /* 터치 기기에서 hover 효과가 남지 않도록 미디어 쿼리 추가 */
+        
         @media (hover: hover) {
-            .search-result-item:hover, .history-item:hover { background-color: #fef3c7; }
+            .search-result-item:hover, .history-item:hover { background-color: #334155; } /* bg-slate-700 */
         }
         .align-btn.active { background-color: #3b82f6; color: white; }
     </style>
@@ -39,11 +46,11 @@
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
     <!-- Password Modal -->
     <div id="password-modal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center p-4 z-[200]">
-        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm space-y-4">
-            <h3 class="text-xl font-bold text-slate-800">비밀번호 입력</h3>
-            <p class="text-sm text-slate-600">프로그램에 접근하려면 비밀번호를 입력하세요.</p>
+        <div class="bg-slate-800 text-slate-200 rounded-2xl shadow-xl p-8 w-full max-w-sm space-y-4">
+            <h3 class="text-xl font-bold">비밀번호 입력</h3>
+            <p class="text-sm text-slate-400">프로그램에 접근하려면 비밀번호를 입력하세요.</p>
             <div>
-                <input type="password" id="password-input" class="w-full border-slate-300 rounded-md shadow-sm p-2 focus:border-blue-500 focus:ring-blue-500">
+                <input type="password" id="password-input" class="w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2 focus:border-blue-500 focus:ring-blue-500">
             </div>
             <div class="text-right">
                 <button id="password-submit-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600">확인</button>
@@ -52,26 +59,26 @@
     </div>
 
     <!-- Main Content -->
-    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl shadow-sky-200/50 p-8 space-y-6">
+    <div class="w-full max-w-2xl bg-slate-800 rounded-3xl shadow-2xl shadow-sky-900/50 p-8 space-y-6">
         <div class="text-center">
-            <h1 class="text-4xl font-bold text-sky-800">성경 말씀 프로젝터</h1>
-            <p class="text-slate-500 mt-2">믿음은 들음에서 나며 들음은 그리스도의 말씀으로 말미암았느니라</p>
+            <h1 class="text-4xl font-bold text-sky-300">성경 말씀 프로젝터</h1>
+            <p class="text-slate-400 mt-2">믿음은 들음에서 나며 들음은 그리스도의 말씀으로 말미암았느니라</p>
         </div>
         
-        <div id="db-loader" class="hidden text-center p-6 border-2 border-dashed border-sky-300 rounded-2xl space-y-4">
+        <div id="db-loader" class="hidden text-center p-6 border-2 border-dashed border-sky-700 rounded-2xl space-y-4">
               <div>
                   <label for="db-file-input" class="cursor-pointer w-full bg-sky-500 text-white font-bold py-3 px-4 rounded-xl hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all transform hover:scale-105 inline-block">
                       KOR.db 파일 선택하기
                   </label>
                   <input type="file" id="db-file-input" accept=".db">
-                  <p id="db-status" class="text-sm text-slate-500 mt-3">성경 데이터베이스 파일을 불러와주세요.</p>
+                  <p id="db-status" class="text-sm text-slate-400 mt-3">성경 데이터베이스 파일을 불러와주세요.</p>
               </div>
               <div>
                   <label for="logo-file-input" class="cursor-pointer w-full bg-gray-500 text-white font-bold py-3 px-4 rounded-xl hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all transform hover:scale-105 inline-block">
                       로고 이미지 선택 (선택 사항)
                   </label>
                   <input type="file" id="logo-file-input" accept="image/*">
-                  <p id="logo-status" class="text-sm text-slate-500 mt-3">로고를 선택하지 않으면 '성경' 문구가 표시됩니다.</p>
+                  <p id="logo-status" class="text-sm text-slate-400 mt-3">로고를 선택하지 않으면 '성경' 문구가 표시됩니다.</p>
               </div>
         </div>
 
@@ -85,34 +92,34 @@
             <div id="control-panel" class="hidden space-y-6">
                 <div class="space-y-4">
                     <div>
-                        <label for="verse-input" class="block text-sm font-medium text-slate-600">구절 검색 (예: 창 1:1, 시 23:1-6)</label>
+                        <label for="verse-input" class="block text-sm font-medium text-slate-300">구절 검색 (예: 창 1:1, 시 23:1-6)</label>
                         <div class="mt-1 flex rounded-xl shadow-sm">
-                            <button id="prev-verse-btn" class="inline-flex items-center rounded-l-xl border border-r-0 border-slate-300 bg-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>이전</button>
-                            <button id="next-verse-btn" class="inline-flex items-center border border-y-slate-300 border-x-0 bg-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>다음</button>
-                            <input type="text" id="verse-input" class="flex-1 block w-full rounded-none border-slate-300 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3" placeholder="창 1:1-5">
+                            <button id="prev-verse-btn" class="inline-flex items-center rounded-l-xl border border-r-0 border-slate-500 bg-slate-600 px-4 py-2 text-sm font-bold text-slate-200 hover:bg-slate-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>이전</button>
+                            <button id="next-verse-btn" class="inline-flex items-center border border-y-slate-500 border-x-0 bg-slate-600 px-4 py-2 text-sm font-bold text-slate-200 hover:bg-slate-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>다음</button>
+                            <input type="text" id="verse-input" class="flex-1 block w-full rounded-none border-slate-600 bg-slate-700 text-white focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3" placeholder="창 1:1-5">
                             <button id="display-btn" class="inline-flex items-center border border-l-0 border-blue-500 bg-blue-500 px-5 py-2 text-sm font-bold text-white hover:bg-blue-600 transition-colors">띄우기</button>
-                            <button id="open-history-modal-btn" class="inline-flex items-center rounded-r-xl border border-l-0 border-slate-300 bg-slate-200 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-300 transition-colors">기록</button>
+                            <button id="open-history-modal-btn" class="inline-flex items-center rounded-r-xl border border-l-0 border-slate-500 bg-slate-600 px-4 py-2 text-sm font-bold text-slate-200 hover:bg-slate-500 transition-colors">기록</button>
                         </div>
                     </div>
                     <div>
-                        <label for="keyword-input" class="block text-sm font-medium text-slate-600">단어 검색 (여러 단어는 띄어쓰기로 구분)</label>
+                        <label for="keyword-input" class="block text-sm font-medium text-slate-300">단어 검색 (여러 단어는 띄어쓰기로 구분)</label>
                         <div class="mt-1 flex rounded-xl shadow-sm">
-                            <input type="text" id="keyword-input" class="flex-1 block w-full rounded-none rounded-l-xl border-slate-300 focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3" placeholder="천지 창조">
+                            <input type="text" id="keyword-input" class="flex-1 block w-full rounded-none rounded-l-xl border-slate-600 bg-slate-700 text-white focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-3" placeholder="천지 창조">
                             <button id="keyword-search-btn" class="inline-flex items-center rounded-r-xl border border-l-0 border-teal-500 bg-teal-500 px-5 py-2 text-sm font-bold text-white hover:bg-teal-600 transition-colors">검색</button>
                         </div>
                     </div>
                 </div>
                 
                 <div>
-                    <label for="custom-text-input" class="block text-sm font-medium text-slate-600">사용자 문구 입력</label>
+                    <label for="custom-text-input" class="block text-sm font-medium text-slate-300">사용자 문구 입력</label>
                     <div class="mt-1 flex rounded-xl shadow-sm">
-                        <textarea id="custom-text-input" rows="2" class="flex-1 block w-full rounded-none rounded-l-xl border-slate-300 focus:border-pink-500 focus:ring-pink-500 sm:text-sm p-3" placeholder="화면에 띄울 문구를 입력하세요..."></textarea>
+                        <textarea id="custom-text-input" rows="2" class="flex-1 block w-full rounded-none rounded-l-xl border-slate-600 bg-slate-700 text-white focus:border-pink-500 focus:ring-pink-500 sm:text-sm p-3" placeholder="화면에 띄울 문구를 입력하세요..."></textarea>
                         <button id="display-custom-text-btn" class="inline-flex items-center rounded-r-xl border border-l-0 border-pink-500 bg-pink-500 px-5 py-2 text-sm font-bold text-white hover:bg-pink-600 transition-colors">띄우기</button>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-slate-600">보조 모니터 미리보기 (스크롤 동기화)</label>
+                    <label class="block text-sm font-medium text-slate-300">보조 모니터 미리보기 (스크롤 동기화)</label>
                     <div id="preview-display" class="mt-1 bg-slate-900 text-white p-4 rounded-xl border border-slate-700 text-left flex">
                         <div id="preview-content-wrapper" class="w-full">
                             <div id="preview-content" class="flex items-center justify-center h-full">
@@ -123,9 +130,9 @@
                 </div>
 
                 <div id="search-result-container">
-                    <label class="block text-sm font-medium text-slate-600">검색 결과</label>
-                    <div id="search-result-display" class="mt-1 bg-sky-50/50 p-4 rounded-xl border border-sky-200 text-left">
-                        <p class="text-slate-500 text-center">이곳에 단어 검색 결과가 표시됩니다.</p>
+                    <label class="block text-sm font-medium text-slate-300">검색 결과</label>
+                    <div id="search-result-display" class="mt-1 bg-slate-900/50 p-4 rounded-xl border border-slate-700 text-left">
+                        <p class="text-slate-400 text-center">이곳에 단어 검색 결과가 표시됩니다.</p>
                     </div>
                 </div>
                 
@@ -135,37 +142,37 @@
                     </button>
                 </div>
 
-                <div id="reference-section" class="flex space-x-2 pt-4 border-t border-sky-100">
-                    <button id="open-reference-btn" class="flex-1 bg-indigo-100 text-indigo-800 font-semibold py-2 px-4 rounded-xl hover:bg-indigo-200 transition-colors">
+                <div id="reference-section" class="flex space-x-2 pt-4 border-t border-slate-700">
+                    <button id="open-reference-btn" class="flex-1 bg-indigo-900/50 text-indigo-300 font-semibold py-2 px-4 rounded-xl hover:bg-indigo-800/60 transition-colors">
                         참고 말씀
                     </button>
-                    <button id="open-reference-manager-btn" class="flex-1 bg-rose-100 text-rose-800 font-semibold py-2 px-4 rounded-xl hover:bg-rose-200 transition-colors">
+                    <button id="open-reference-manager-btn" class="flex-1 bg-rose-900/50 text-rose-300 font-semibold py-2 px-4 rounded-xl hover:bg-rose-800/60 transition-colors">
                         참고 말씀 관리
                     </button>
                 </div>
 
-                <div class="pt-6 border-t border-sky-100">
-                    <h3 class="text-lg font-semibold text-slate-700 mb-2">단어 강조</h3>
+                <div class="pt-6 border-t border-slate-700">
+                    <h3 class="text-lg font-semibold text-slate-200 mb-2">단어 강조</h3>
                     <div class="space-y-3">
                         <div>
-                            <label for="highlight-input" class="text-sm font-medium text-slate-700">강조할 단어 (띄어쓰기로 구분)</label>
-                            <input type="text" id="highlight-input" placeholder="예: 하나님 사랑" class="mt-1 w-full border-slate-300 rounded-md shadow-sm p-2 focus:border-blue-500 focus:ring-blue-500">
+                            <label for="highlight-input" class="text-sm font-medium text-slate-300">강조할 단어 (띄어쓰기로 구분)</label>
+                            <input type="text" id="highlight-input" placeholder="예: 하나님 사랑" class="mt-1 w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2 focus:border-blue-500 focus:ring-blue-500">
                         </div>
-                        <div class="flex items-center justify-between space-x-4">
+                        <div class="flex items-center justify-between space-x-4 text-slate-300">
                             <div class="flex items-center space-x-2">
                                 <label for="highlight-color" class="text-sm">색상:</label>
                                 <input type="color" id="highlight-color" value="#FFD700" class="w-10 h-8 p-0 border-none rounded">
                             </div>
                             <div class="flex items-center">
-                                <input type="checkbox" id="highlight-bold" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <input type="checkbox" id="highlight-bold" class="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500 bg-slate-600">
                                 <label for="highlight-bold" class="ml-2 text-sm">굵게</label>
                             </div>
                             <div class="flex items-center">
-                                <input type="checkbox" id="highlight-italic" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <input type="checkbox" id="highlight-italic" class="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500 bg-slate-600">
                                 <label for="highlight-italic" class="ml-2 text-sm">이탤릭</label>
                             </div>
                             <div class="flex items-center">
-                                <input type="checkbox" id="highlight-underline" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <input type="checkbox" id="highlight-underline" class="h-4 w-4 text-blue-600 border-gray-500 rounded focus:ring-blue-500 bg-slate-600">
                                 <label for="highlight-underline" class="ml-2 text-sm">밑줄</label>
                             </div>
                         </div>
@@ -176,14 +183,14 @@
                     </div>
                 </div>
                 
-                <div class="flex space-x-4 pt-6 border-t border-sky-100">
-                    <button id="open-style-modal-btn" class="flex-1 bg-amber-100 text-amber-800 font-semibold py-2 px-4 rounded-xl hover:bg-amber-200 transition-colors">
+                <div class="flex space-x-4 pt-6 border-t border-slate-700">
+                    <button id="open-style-modal-btn" class="flex-1 bg-amber-900/50 text-amber-300 font-semibold py-2 px-4 rounded-xl hover:bg-amber-800/60 transition-colors">
                         스타일 설정
                     </button>
-                    <button id="reopen-window-btn" class="flex-1 bg-sky-100 text-sky-800 font-semibold py-2 px-4 rounded-xl hover:bg-sky-200 transition-colors">
+                    <button id="reopen-window-btn" class="flex-1 bg-sky-900/50 text-sky-300 font-semibold py-2 px-4 rounded-xl hover:bg-sky-800/60 transition-colors">
                         말씀창 띄우기
                     </button>
-                    <button id="open-guide-modal-btn" class="flex-1 bg-slate-100 text-slate-700 font-semibold py-2 px-4 rounded-xl hover:bg-slate-200 transition-colors">
+                    <button id="open-guide-modal-btn" class="flex-1 bg-slate-600 text-slate-200 font-semibold py-2 px-4 rounded-xl hover:bg-slate-500 transition-colors">
                         사용 안내
                     </button>
                 </div>
@@ -193,69 +200,69 @@
 
     <!-- Modals -->
     <div id="style-modal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md space-y-4">
+        <div class="bg-slate-800 text-slate-300 rounded-2xl shadow-xl p-8 w-full max-w-md space-y-4">
             <div>
-                <h3 class="text-xl font-bold text-slate-800">말씀 스타일 설정</h3>
+                <h3 class="text-xl font-bold text-slate-200">말씀 스타일 설정</h3>
                 <div class="space-y-3 mt-4">
                     <div>
-                        <label for="font-size-slider" class="block text-sm font-medium text-slate-700">글자 크기: <span id="font-size-value" class="font-bold text-blue-600">72</span>px</label>
-                        <input id="font-size-slider" type="range" min="20" max="150" value="72" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                        <label for="font-size-slider" class="block text-sm font-medium">글자 크기: <span id="font-size-value" class="font-bold text-blue-400">72</span>px</label>
+                        <input id="font-size-slider" type="range" min="20" max="150" value="72" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500">
                     </div>
                     <div>
-                        <label for="line-height-slider" class="block text-sm font-medium text-slate-700">줄 간격: <span id="line-height-value" class="font-bold text-blue-600">1.5</span></label>
-                        <input id="line-height-slider" type="range" min="1" max="3" value="1.5" step="0.1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                        <label for="line-height-slider" class="block text-sm font-medium">줄 간격: <span id="line-height-value" class="font-bold text-blue-400">1.5</span></label>
+                        <input id="line-height-slider" type="range" min="1" max="3" value="1.5" step="0.1" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-blue-500">
                     </div>
                 </div>
             </div>
-            <div class="border-t pt-4">
-                   <h3 class="text-xl font-bold text-slate-800">사용자 문구 스타일 설정</h3>
+            <div class="border-t border-slate-700 pt-4">
+                   <h3 class="text-xl font-bold text-slate-200">사용자 문구 스타일 설정</h3>
                    <div class="space-y-4 mt-4">
                        <div>
-                           <label for="custom-text-font-size-slider" class="block text-sm font-medium text-slate-700">글자 크기: <span id="custom-text-font-size-value" class="font-bold text-pink-600">72</span>px</label>
-                           <input id="custom-text-font-size-slider" type="range" min="20" max="300" value="72" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                           <label for="custom-text-font-size-slider" class="block text-sm font-medium">글자 크기: <span id="custom-text-font-size-value" class="font-bold text-pink-400">72</span>px</label>
+                           <input id="custom-text-font-size-slider" type="range" min="20" max="300" value="72" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-pink-500">
                        </div>
                        <div class="flex items-center space-x-2">
-                           <label for="custom-text-color" class="text-sm font-medium text-slate-700">글자 색상:</label>
+                           <label for="custom-text-color" class="text-sm font-medium">글자 색상:</label>
                            <input type="color" id="custom-text-color" value="#FFFFFF" class="w-10 h-8 p-0 border-none rounded">
                        </div>
                        <div>
-                           <label class="block text-sm font-medium text-slate-700 mb-2">가로 정렬</label>
+                           <label class="block text-sm font-medium mb-2">가로 정렬</label>
                            <div id="custom-text-align-group" class="flex rounded-lg shadow-sm">
-                               <button data-align="left" class="align-btn flex-1 bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-l-lg hover:bg-slate-300">왼쪽</button>
-                               <button data-align="center" class="align-btn flex-1 bg-slate-200 text-slate-700 font-semibold py-2 px-4 border-x border-slate-300 hover:bg-slate-300 active">가운데</button>
-                               <button data-align="right" class="align-btn flex-1 bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-r-lg hover:bg-slate-300">오른쪽</button>
+                               <button data-align="left" class="align-btn flex-1 bg-slate-600 text-slate-200 font-semibold py-2 px-4 rounded-l-lg hover:bg-slate-500">왼쪽</button>
+                               <button data-align="center" class="align-btn flex-1 bg-slate-600 text-slate-200 font-semibold py-2 px-4 border-x border-slate-700 hover:bg-slate-500 active">가운데</button>
+                               <button data-align="right" class="align-btn flex-1 bg-slate-600 text-slate-200 font-semibold py-2 px-4 rounded-r-lg hover:bg-slate-500">오른쪽</button>
                            </div>
                        </div>
                        <div>
-                           <label class="block text-sm font-medium text-slate-700 mb-2">세로 정렬</label>
+                           <label class="block text-sm font-medium mb-2">세로 정렬</label>
                            <div id="custom-text-valign-group" class="flex rounded-lg shadow-sm">
-                               <button data-valign="flex-start" class="align-btn flex-1 bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-l-lg hover:bg-slate-300">위</button>
-                               <button data-valign="center" class="align-btn flex-1 bg-slate-200 text-slate-700 font-semibold py-2 px-4 border-x border-slate-300 hover:bg-slate-300 active">중간</button>
-                               <button data-valign="flex-end" class="align-btn flex-1 bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-r-lg hover:bg-slate-300">아래</button>
+                               <button data-valign="flex-start" class="align-btn flex-1 bg-slate-600 text-slate-200 font-semibold py-2 px-4 rounded-l-lg hover:bg-slate-500">위</button>
+                               <button data-valign="center" class="align-btn flex-1 bg-slate-600 text-slate-200 font-semibold py-2 px-4 border-x border-slate-700 hover:bg-slate-500 active">중간</button>
+                               <button data-valign="flex-end" class="align-btn flex-1 bg-slate-600 text-slate-200 font-semibold py-2 px-4 rounded-r-lg hover:bg-slate-500">아래</button>
                            </div>
                        </div>
                    </div>
             </div>
-            <div class="text-right border-t pt-4">
+            <div class="text-right border-t border-slate-700 pt-4">
                 <button id="close-style-modal-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600">닫기</button>
             </div>
         </div>
     </div>
     
     <div id="history-modal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl space-y-4">
-              <h3 class="text-xl font-bold text-slate-800">검색 기록</h3>
-              <div id="history-list" class="bg-slate-100 p-2 rounded-lg border"></div>
+        <div class="bg-slate-800 rounded-2xl shadow-xl p-8 w-full max-w-2xl space-y-4">
+              <h3 class="text-xl font-bold text-slate-200">검색 기록</h3>
+              <div id="history-list" class="bg-slate-900 p-2 rounded-lg border border-slate-700"></div>
               <div class="text-right">
-                    <button id="close-history-modal-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600">닫기</button>
+                   <button id="close-history-modal-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600">닫기</button>
             </div>
         </div>
     </div>
 
     <div id="guide-modal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg space-y-4 overflow-y-auto" style="max-height: 90vh;">
-              <h3 class="text-xl font-bold text-slate-800">💡 사용 안내</h3>
-              <ol class="list-decimal list-inside space-y-2 text-slate-700">
+        <div class="bg-slate-800 text-slate-300 rounded-2xl shadow-xl p-8 w-full max-w-lg space-y-4 overflow-y-auto" style="max-height: 90vh;">
+              <h3 class="text-xl font-bold text-slate-200">💡 사용 안내</h3>
+              <ol class="list-decimal list-inside space-y-2">
                   <li>'KOR.db 파일 선택하기'를 눌러 성경 데이터베이스 파일을 불러옵니다.</li>
                   <li>'말씀 창 열기'를 눌러 새 창을 띄운 후 보조 모니터로 옮깁니다.</li>
                   <li>'기록' 버튼으로 검색했던 말씀과 내용을 확인하고, '반영' 버튼으로 참고 말씀에 추가할 수 있습니다.</li>
@@ -266,53 +273,53 @@
                   <li>말씀 창에서 <b>Shift + 방향키</b>(←, →)로 구절 범위를 조절할 수 있습니다.</li>
               </ol>
 
-              <div class="border-t pt-4 mt-4">
-                  <h4 class="text-lg font-bold text-slate-800 mb-2">비밀번호 변경</h4>
+              <div class="border-t border-slate-700 pt-4 mt-4">
+                  <h4 class="text-lg font-bold text-slate-200 mb-2">비밀번호 변경</h4>
                   <div class="space-y-2">
                       <div>
                           <label for="current-password-input" class="text-sm">현재 비밀번호</label>
-                          <input type="password" id="current-password-input" class="mt-1 w-full border-slate-300 rounded-md shadow-sm p-2">
+                          <input type="password" id="current-password-input" class="mt-1 w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2">
                       </div>
                       <div>
                           <label for="new-password-input" class="text-sm">새 비밀번호</label>
-                          <input type="password" id="new-password-input" class="mt-1 w-full border-slate-300 rounded-md shadow-sm p-2">
+                          <input type="password" id="new-password-input" class="mt-1 w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2">
                       </div>
                       <div>
                           <label for="confirm-password-input" class="text-sm">새 비밀번호 확인</label>
-                          <input type="password" id="confirm-password-input" class="mt-1 w-full border-slate-300 rounded-md shadow-sm p-2">
+                          <input type="password" id="confirm-password-input" class="mt-1 w-full bg-slate-700 border-slate-600 text-white rounded-md shadow-sm p-2">
                       </div>
                       <button id="change-password-btn" class="w-full bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-600 mt-2">비밀번호 변경</button>
                   </div>
               </div>
 
-              <div class="text-right border-t pt-4 mt-4">
+              <div class="text-right border-t border-slate-700 pt-4 mt-4">
                   <button id="close-guide-modal-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600">확인</button>
               </div>
         </div>
     </div>
 
     <div id="add-to-reference-modal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md space-y-4">
-              <h3 class="text-xl font-bold text-slate-800">참고 말씀에 추가</h3>
-              <p class="text-sm text-slate-600">선택한 기록을 어느 카테고리에 추가하시겠습니까?</p>
+        <div class="bg-slate-800 text-slate-300 rounded-2xl shadow-xl p-8 w-full max-w-md space-y-4">
+              <h3 class="text-xl font-bold text-slate-200">참고 말씀에 추가</h3>
+              <p class="text-sm text-slate-400">선택한 기록을 어느 카테고리에 추가하시겠습니까?</p>
               <div id="add-to-reference-form" class="space-y-4">
                   <div>
-                      <label for="reference-sheet-select" class="block text-sm font-medium text-slate-700">상담 시트 선택</label>
-                      <select id="reference-sheet-select" class="mt-1 block w-full p-2 border border-slate-300 rounded-md">
+                      <label for="reference-sheet-select" class="block text-sm font-medium">상담 시트 선택</label>
+                      <select id="reference-sheet-select" class="mt-1 block w-full p-2 bg-slate-700 border border-slate-600 text-white rounded-md">
                           <option value="evangelism">전도상담</option>
                           <option value="life">생활상담</option>
                       </select>
                   </div>
                   <div>
-                    <label for="reference-category-select" class="block text-sm font-medium text-slate-700">기존 카테고리 선택</label>
-                    <select id="reference-category-select" class="mt-1 block w-full p-2 border border-slate-300 rounded-md"></select>
+                    <label for="reference-category-select" class="block text-sm font-medium">기존 카테고리 선택</label>
+                    <select id="reference-category-select" class="mt-1 block w-full p-2 bg-slate-700 border border-slate-600 text-white rounded-md"></select>
                   </div>
                   <div>
-                    <label for="new-reference-category-input" class="block text-sm font-medium text-slate-700">또는 새 카테고리 입력</label>
-                    <input type="text" id="new-reference-category-input" placeholder="새 카테고리 이름" class="mt-1 block w-full p-2 border border-slate-300 rounded-md">
+                    <label for="new-reference-category-input" class="block text-sm font-medium">또는 새 카테고리 입력</label>
+                    <input type="text" id="new-reference-category-input" placeholder="새 카테고리 이름" class="mt-1 block w-full p-2 bg-slate-700 border border-slate-600 text-white rounded-md">
                   </div>
               </div>
-              <div class="flex justify-end space-x-2 border-t pt-4">
+              <div class="flex justify-end space-x-2 border-t border-slate-700 pt-4">
                 <button id="add-to-reference-save-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600">저장</button>
                 <button id="add-to-reference-cancel-btn" class="bg-slate-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-slate-600">취소</button>
               </div>
@@ -320,10 +327,10 @@
     </div>
     
     <div id="generic-modal" class="modal fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-sm space-y-4">
-            <h3 id="generic-modal-title" class="text-xl font-bold text-slate-800">알림</h3>
-            <p id="generic-modal-message" class="text-slate-600"></p>
-            <div id="generic-modal-buttons" class="flex justify-end space-x-2 border-t pt-4"></div>
+        <div class="bg-slate-800 rounded-2xl shadow-xl p-8 w-full max-w-sm space-y-4">
+            <h3 id="generic-modal-title" class="text-xl font-bold text-slate-200">알림</h3>
+            <p id="generic-modal-message" class="text-slate-300"></p>
+            <div id="generic-modal-buttons" class="flex justify-end space-x-2 border-t border-slate-700 pt-4"></div>
         </div>
     </div>
 
@@ -639,9 +646,9 @@
                         <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>말씀</title>
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <script src="https://cdn.tailwindcss.com"><\/script>
-                        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600&display=swap" rel="stylesheet">
+                        <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
                         <style>
-                            body { font-family:'Noto Serif KR',serif; -webkit-overflow-scrolling: touch; } 
+                            body { font-family:'Gowun Batang',serif; -webkit-overflow-scrolling: touch; } 
                             #verse-container { transition:opacity 0.3s ease-in-out; }
                             ::-webkit-scrollbar { width:10px; } ::-webkit-scrollbar-track { background:#1f2937; }
                             ::-webkit-scrollbar-thumb { background:#4b5563; border-radius:5px; } ::-webkit-scrollbar-thumb:hover { background:#6b7280; }
@@ -700,9 +707,9 @@
                     if (isMulti) {
                         const bookName = state.bookInfoMap[v.book].name;
                         const fullAddress = `${bookName} ${v.chapter}:${v.verse}`;
-                        return `<div class="mb-4"><p class="flex items-baseline"><span class="verse-number text-sky-500 font-normal mr-4">${v.verse}</span><span class="verse-text-content">${verseText}</span></p><p class="multi-verse-full-address text-right text-sm text-amber-400/80 mt-1 pr-2">${fullAddress}</p></div>`;
+                        return `<div class="mb-4"><p class="flex items-baseline"><span class="verse-number text-sky-400 font-normal mr-4">${v.verse}</span><span class="verse-text-content">${verseText}</span></p><p class="multi-verse-full-address text-right text-sm text-amber-400/80 mt-1 pr-2">${fullAddress}</p></div>`;
                     } else {
-                        return `<p class="flex items-baseline"><span class="verse-number text-sky-500 font-normal mr-4">${v.verse}</span><span class="verse-text-content">${verseText}</span></p>`;
+                        return `<p class="flex items-baseline"><span class="verse-number text-sky-400 font-normal mr-4">${v.verse}</span><span class="verse-text-content">${verseText}</span></p>`;
                     }
                 }).join('');
             },
@@ -832,7 +839,7 @@
                 const fragment = document.createDocumentFragment();
                 state.searchHistory.forEach((item, index) => {
                     const div = document.createElement('div');
-                    div.className = 'history-item p-3 border-b border-slate-200 flex justify-between items-center';
+                    div.className = 'history-item p-3 border-b border-slate-700 flex justify-between items-center';
                     div.dataset.historyIndex = index;
 
                     const typeLabel = { verse: '구절', keyword: '단어', checked: '선택', custom: '문구' }[item.type];
@@ -841,10 +848,10 @@
                     
                     div.innerHTML = `
                         <div class="history-content-btn flex-1 cursor-pointer">
-                            <p class="font-bold text-slate-800"><span class="text-sm text-blue-600">[${typeLabel}]</span> ${item.term}</p>
-                            <p class="text-sm text-slate-500 mt-1">${contentPreview}</p>
+                            <p class="font-bold text-slate-300"><span class="text-sm text-blue-400">[${typeLabel}]</span> ${item.term}</p>
+                            <p class="text-sm text-slate-400 mt-1">${contentPreview}</p>
                         </div>
-                        <button class="add-to-ref-btn bg-indigo-100 text-indigo-700 text-sm font-semibold py-1 px-3 rounded-md hover:bg-indigo-200 ml-4"
+                        <button class="add-to-ref-btn bg-indigo-900/70 text-indigo-300 text-sm font-semibold py-1 px-3 rounded-md hover:bg-indigo-800/80 ml-4"
                                 ${item.type === 'custom' || item.type === 'keyword' ? 'disabled' : ''} title="참고 말씀에 추가">
                             반영
                         </button>`;
@@ -897,8 +904,8 @@
                 if (!historyInfo || !historyInfo.term) return;
                 const newHistoryItem = { type: historyInfo.type, term: historyInfo.term, result: queryResult };
                 const isDuplicate = state.searchHistory.length > 0 &&
-                                         state.searchHistory[0].type === newHistoryItem.type &&
-                                         state.searchHistory[0].term === newHistoryItem.term;
+                                      state.searchHistory[0].type === newHistoryItem.type &&
+                                      state.searchHistory[0].term === newHistoryItem.term;
                 if (!isDuplicate) {
                     state.searchHistory.unshift(newHistoryItem);
                     if (state.searchHistory.length > 100) state.searchHistory.pop();
@@ -964,25 +971,25 @@
                 const results = core.queryByKeyword(searchTerm);
                 dom['search-result-display'].innerHTML = '';
                 if (results.length === 0) {
-                    dom['search-result-display'].innerHTML = '<p class="text-center text-slate-500">검색 결과가 없습니다.</p>';
+                    dom['search-result-display'].innerHTML = '<p class="text-center text-slate-400">검색 결과가 없습니다.</p>';
                     return;
                 }
                 const keywords = searchTerm.trim().split(' ').filter(k => k);
                 const resultHeader = document.createElement('p');
-                resultHeader.className = "text-sm text-slate-600 mb-2";
+                resultHeader.className = "text-sm text-slate-400 mb-2";
                 resultHeader.innerHTML = `'<strong>${searchTerm}</strong>' 검색 결과: <strong>${results.length}</strong>개`;
                 dom['search-result-display'].appendChild(resultHeader);
                 
                 const fragment = document.createDocumentFragment();
                 results.forEach(verse => {
                     const item = document.createElement('div');
-                    item.className = 'search-result-item p-2 border-b border-sky-100 flex items-center';
-                    let highlightedText = verse.text.replace(new RegExp(keywords.join('|'), 'g'), match => `<strong class="text-blue-600 font-bold">${match}</strong>`);
+                    item.className = 'search-result-item p-2 border-b border-slate-700 flex items-center';
+                    let highlightedText = verse.text.replace(new RegExp(keywords.join('|'), 'g'), match => `<strong class="text-blue-400 font-bold">${match}</strong>`);
                     const bookName = state.bookInfoMap[verse.book].name;
                     const address = `${bookName} ${verse.chapter}:${verse.verse}`;
                     const verseData = { book: verse.book, chapter: verse.chapter, verse: verse.verse, text: verse.text };
                     
-                    item.innerHTML = `<input type="checkbox" class="verse-checkbox h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 mr-3 shrink-0" data-verse='${JSON.stringify(verseData)}'><div class="verse-content flex-1 cursor-pointer" data-address="${address}"><p class="font-bold text-sm text-slate-800">${address}</p><p class="text-sm text-slate-600">${highlightedText}</p></div>`;
+                    item.innerHTML = `<input type="checkbox" class="verse-checkbox h-4 w-4 text-purple-600 border-gray-500 rounded focus:ring-purple-500 mr-3 shrink-0 bg-slate-600"><div class="verse-content flex-1 cursor-pointer" data-address="${address}"><p class="font-bold text-sm text-slate-300">${address}</p><p class="text-sm text-slate-400">${highlightedText}</p></div>`;
                     fragment.appendChild(item);
                 });
                 dom['search-result-display'].appendChild(fragment);
@@ -1038,22 +1045,23 @@
                 state.referenceWindow = window.open('', 'ReferenceWindow', 'width=500,height=600,scrollbars=yes');
                 if (state.referenceWindow) {
                     const createSheetHtml = (sheetData) => {
-                        if (Object.keys(sheetData).length === 0) return '<p class="text-slate-500 text-center p-4">참고 말씀이 없습니다.</p>';
+                        if (Object.keys(sheetData).length === 0) return '<p class="text-slate-400 text-center p-4">참고 말씀이 없습니다.</p>';
                         return Object.entries(sheetData).map(([category, verses]) => `
                             <div class="mb-4">
-                                <h4 class="font-bold text-lg text-indigo-700">${category}</h4>
-                                <div class="flex flex-wrap gap-2 mt-2">${verses.map(ref => `<button class="reference-verse-item bg-indigo-50 text-indigo-800 text-sm font-semibold px-3 py-1 rounded-full hover:bg-indigo-200" data-ref="${ref}">${ref}</button>`).join('')}</div>
+                                <h4 class="font-bold text-lg text-indigo-300">${category}</h4>
+                                <div class="flex flex-wrap gap-2 mt-2">${verses.map(ref => `<button class="reference-verse-item bg-indigo-900/70 text-indigo-200 text-sm font-semibold px-3 py-1 rounded-full hover:bg-indigo-800/80" data-ref="${ref}">${ref}</button>`).join('')}</div>
                             </div>`).join('');
                     };
                     const content = `
                         <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>참고 말씀</title>
                         <script src="https://cdn.tailwindcss.com"><\/script>
-                        <style>.toggle-content { display: none; } .toggle-header { cursor: pointer; }</style></head>
-                        <body class="bg-slate-50 p-6">
-                            <h3 class="text-xl font-bold text-slate-800 mb-4">주제별 참고 말씀</h3>
+                        <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+                        <style>body{font-family:'Gowun Batang',serif;}.toggle-content { display: none; } .toggle-header { cursor: pointer; }</style></head>
+                        <body class="bg-slate-900 text-slate-300 p-6">
+                            <h3 class="text-xl font-bold text-slate-200 mb-4">주제별 참고 말씀</h3>
                             <div id="reference-list-container" class="space-y-2">
-                               <div class="border rounded-lg bg-white"><h4 class="toggle-header text-lg font-semibold p-3 bg-indigo-100 text-indigo-800 rounded-t-lg" data-toggle="evangelism">전도상담</h4><div class="toggle-content p-4 border-t" data-content="evangelism">${createSheetHtml(state.referenceVerses.evangelism || {})}</div></div>
-                               <div class="border rounded-lg bg-white"><h4 class="toggle-header text-lg font-semibold p-3 bg-teal-100 text-teal-800 rounded-t-lg" data-toggle="life">생활상담</h4><div class="toggle-content p-4 border-t" data-content="life">${createSheetHtml(state.referenceVerses.life || {})}</div></div>
+                                <div class="border border-slate-700 rounded-lg bg-slate-800"><h4 class="toggle-header text-lg font-semibold p-3 bg-indigo-900/50 text-indigo-300 rounded-t-lg" data-toggle="evangelism">전도상담</h4><div class="toggle-content p-4 border-t border-slate-700" data-content="evangelism">${createSheetHtml(state.referenceVerses.evangelism || {})}</div></div>
+                                <div class="border border-slate-700 rounded-lg bg-slate-800"><h4 class="toggle-header text-lg font-semibold p-3 bg-teal-900/50 text-teal-300 rounded-t-lg" data-toggle="life">생활상담</h4><div class="toggle-content p-4 border-t border-slate-700" data-content="life">${createSheetHtml(state.referenceVerses.life || {})}</div></div>
                             </div>
                             <script>
                                 document.addEventListener('click', (e) => {
@@ -1080,12 +1088,12 @@
                         const escapedCategory = category.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
                         const textareaContent = versesText.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                         return `
-                        <div class="reference-category-manager p-3 bg-white rounded-lg shadow-sm">
+                        <div class="reference-category-manager p-3 bg-slate-800 rounded-lg shadow-sm">
                             <div class="flex justify-between items-center mb-2">
-                                <input type="text" value="${escapedCategory}" class="category-name-input font-bold text-lg text-rose-700 border-b-2 border-rose-200 focus:border-rose-500 bg-transparent outline-none flex-grow">
-                                <button class="remove-category-btn text-red-500 hover:text-red-700 font-bold ml-2">X</button>
+                                <input type="text" value="${escapedCategory}" class="category-name-input font-bold text-lg text-rose-400 border-b-2 border-rose-700 focus:border-rose-500 bg-transparent outline-none flex-grow">
+                                <button class="remove-category-btn text-red-500 hover:text-red-400 font-bold ml-2">X</button>
                             </div>
-                            <textarea class="w-full h-24 p-2 border border-slate-300 rounded-md text-sm">${textareaContent}</textarea>
+                            <textarea class="w-full h-24 p-2 border border-slate-600 bg-slate-700 text-white rounded-md text-sm">${textareaContent}</textarea>
                         </div>`;
                     };
                     const createManagerSheetHtml = (sheetData) => Object.entries(sheetData).map(([category, verses]) => createManagerCategoryHtml(category, verses.join('\n'))).join('');
@@ -1095,26 +1103,28 @@
                     const content = `
                         <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>참고 말씀 관리</title>
                         <script src="https://cdn.tailwindcss.com"><\/script>
+                        <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
                         <style>
+                            body { font-family:'Gowun Batang',serif; }
                             .toggle-content { display: none; } .toggle-header { cursor: pointer; }
-                            .toggle-container.active .toggle-content { display: block; } .toggle-container.active .toggle-header { background-color: #fbcfe8; }
-                            ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #f1f5f9; }
-                            ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+                            .toggle-container.active .toggle-content { display: block; } .toggle-container.active .toggle-header { background-color: #881337; } /* bg-rose-900 */
+                            ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #1e293b; }
+                            ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: #64748b; }
                         </style>
                         </head>
-                        <body class="bg-slate-50 p-6">
+                        <body class="bg-slate-900 text-slate-300 p-6">
                             <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-xl font-bold text-slate-800">참고 말씀 관리</h3>
+                                <h3 class="text-xl font-bold text-slate-200">참고 말씀 관리</h3>
                                 <button id="add-category-btn" class="bg-green-500 text-white font-bold py-1 px-3 rounded-md hover:bg-green-600 text-sm" aria-label="카테고리 추가">+</button>
                             </div>
                             <div id="manager-container" class="space-y-2" style="max-height: calc(100vh - 180px); overflow-y: auto;">
-                                <div class="toggle-container active border rounded-lg bg-white" data-sheet="evangelism">
-                                    <h4 class="toggle-header text-lg font-semibold p-3 bg-rose-100 text-rose-800 rounded-t-lg">전도상담</h4>
-                                    <div class="toggle-content p-4 border-t space-y-4">${managerEvangelismHtml}</div>
+                                <div class="toggle-container active border border-slate-700 rounded-lg bg-slate-800" data-sheet="evangelism">
+                                    <h4 class="toggle-header text-lg font-semibold p-3 bg-rose-900/70 text-rose-300 rounded-t-lg">전도상담</h4>
+                                    <div class="toggle-content p-4 border-t border-slate-700 space-y-4">${managerEvangelismHtml}</div>
                                 </div>
-                                <div class="toggle-container border rounded-lg bg-white" data-sheet="life">
-                                    <h4 class="toggle-header text-lg font-semibold p-3 bg-cyan-100 text-cyan-800 rounded-t-lg">생활상담</h4>
-                                    <div class="toggle-content p-4 border-t space-y-4">${managerLifeHtml}</div>
+                                <div class="toggle-container border border-slate-700 rounded-lg bg-slate-800" data-sheet="life">
+                                    <h4 class="toggle-header text-lg font-semibold p-3 bg-cyan-900/70 text-cyan-300 rounded-t-lg">생활상담</h4>
+                                    <div class="toggle-content p-4 border-t border-slate-700 space-y-4">${managerLifeHtml}</div>
                                 </div>
                             </div>
                             <div class="flex justify-end space-x-2 mt-4">
@@ -1127,17 +1137,16 @@
                                     const managerContainer = document.getElementById('manager-container');
                                     const createManagerCategoryElement = (category, versesText) => {
                                         const newDiv = document.createElement('div');
-                                        newDiv.className = 'reference-category-manager p-3 bg-white rounded-lg shadow-sm';
-                                        // Changed to string concatenation to avoid template literal conflict
-                                        newDiv.innerHTML = '<div class="flex justify-between items-center mb-2"><input type="text" value="' + category + '" class="category-name-input font-bold text-lg text-rose-700 border-b-2 border-rose-200 focus:border-rose-500 bg-transparent outline-none flex-grow"><button class="remove-category-btn text-red-500 hover:text-red-700 font-bold ml-2">X</button></div><textarea class="w-full h-24 p-2 border border-slate-300 rounded-md text-sm">' + versesText + '</textarea>';
+                                        newDiv.className = 'reference-category-manager p-3 bg-slate-800 rounded-lg shadow-sm';
+                                        newDiv.innerHTML = '<div class="flex justify-between items-center mb-2"><input type="text" value="' + category + '" class="category-name-input font-bold text-lg text-rose-400 border-b-2 border-rose-700 focus:border-rose-500 bg-transparent outline-none flex-grow"><button class="remove-category-btn text-red-500 hover:text-red-400 font-bold ml-2">X</button></div><textarea class="w-full h-24 p-2 border border-slate-600 bg-slate-700 text-white rounded-md text-sm">' + versesText + '</textarea>';
                                         return newDiv;
                                     };
                                     managerContainer.addEventListener('click', e => {
                                         if (e.target.classList.contains('toggle-header')) {
                                             const parentContainer = e.target.closest('.toggle-container');
                                             if (!parentContainer.classList.contains('active')) {
-                                               document.querySelectorAll('.toggle-container').forEach(c => c.classList.remove('active'));
-                                               parentContainer.classList.add('active');
+                                                document.querySelectorAll('.toggle-container').forEach(c => c.classList.remove('active'));
+                                                parentContainer.classList.add('active');
                                             }
                                         } else if (e.target.classList.contains('remove-category-btn')) {
                                             app.showConfirmation("이 카테고리를 삭제하시겠습니까?", confirmed => {
@@ -1171,14 +1180,12 @@
                                                     const versesText = div.querySelector('textarea').value.trim();
                                                     if (categoryName) {
                                                         if (newReferenceVerses[sheet][categoryName]) {
-                                                            // Changed to string concatenation to avoid template literal conflict
                                                             app.showNotification('오류: \\'' + sheet + '\\' 시트에서 \\'' + categoryName + '\\' 카테고리 이름이 중복됩니다.');
                                                             hasError = true; categoryNameInput.focus(); return;
                                                         }
                                                         const verses = versesText.split(/\\r?\\n|\\n/).map(v => v.trim()).filter(Boolean);
                                                         const invalidVerses = verses.filter(v => !app.parseVerseReference(v));
                                                         if (invalidVerses.length > 0) {
-                                                            // Changed to string concatenation to avoid template literal conflict
                                                             app.showNotification('오류: \\'' + categoryName + '\\' 카테고리에 잘못된 형식의 구절이 있습니다:\\n\\n- ' + invalidVerses.join('\\n- '));
                                                             hasError = true; div.querySelector('textarea').focus(); return;
                                                         }
