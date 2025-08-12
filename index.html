@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christian Boruis Web</title>
+    <title>Gyudong Web</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -59,7 +59,7 @@
         // 다크모드 초기 설정: localStorage에 저장된 테마가 있으면 적용
         // 깜빡임 현상을 방지하기 위해 head 태그에 배치합니다.
         try {
-            const theme = localStorage.getItem('christianBoruisWebTheme');
+            const theme = localStorage.getItem('GyudongWebTheme');
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
             }
@@ -137,7 +137,7 @@
             ],
             welcomePage: {
                 type: 'html',
-                content: `<div class='p-10 text-gray-700 dark:text-gray-300'><h1 class='text-3xl font-bold mb-4'>환영합니다!</h1><p class='text-lg'>왼쪽 메뉴를 클릭하여 원하시는 콘텐츠를 확인하세요.</p></div>`
+                content: `<div class='p-10 text-gray-700 dark:text-gray-300'><h1 class='text-3xl font-bold mb-4'>메인화면</h1><p class='text-lg'>필요한 자료를 선택하세요.</p></div>`
             },
             design: {
                 theme: 'light', // 'light' or 'dark'
@@ -769,3 +769,4 @@
     </script>
 </body>
 </html>
+
